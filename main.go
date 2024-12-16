@@ -1,9 +1,9 @@
 package main
 
 import (
-	middleware "schedule-api/Middleware"
 	"schedule-api/controller"
 	"schedule-api/docs"
+	middleware "schedule-api/middleware"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -23,7 +23,6 @@ func main() {
 	schedule := router.Group("/schedule")
 	{
 		schedule.GET("/:date", middleware.CheckScope("volunteer"), controller.GetSchedule)
-		schedule.GET("/:date/:groupid", middleware.CheckScope("team-lead"), controller.GetSchedule)
 
 		schedule.POST("/task", middleware.CheckScope("team-lead"), controller.CreateTask)
 

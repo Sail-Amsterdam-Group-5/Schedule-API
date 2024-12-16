@@ -14,8 +14,9 @@ func GetAllTaskForUser(userId string) ([]byte, error) {
 }
 
 // get all for date
-func GetAllTaskForDate(date string) {
-	return repository.GetAllTaskForDate(date)
+func GetAllTaskForDate(date string) ([]byte, error) {
+	tasks := repository.GetAllTaskForDate(date)
+	return json.Marshal(tasks)
 }
 
 // get by id

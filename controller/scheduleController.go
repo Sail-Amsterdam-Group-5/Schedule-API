@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"schedule-api/model"
+	"schedule-api/service"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,10 +16,11 @@ import (
 // @Success 200 {object} model.TaskDTO[]
 // @Router /schedule/{date} [get]
 func GetSchedule(c *gin.Context) {
-	// date := c.Param("date")
-	// id := c.Request.BasicAuth("id")
-	// // Get the schedule
-	// schedule := getTasks(id, date)
+	date := c.Param("date")
+	id := c.Request.BasicAuth("id")
+	// Get the schedule
+	schedule := service.GetAllTaskForDate(date)
+
 	location1 := model.LocationDTO{Id: 1, Name: "Location 1", Description: "Description 1", Address: "Address 1", Lat: 1.0, Lng: 1.0}
 	location2 := model.LocationDTO{Id: 2, Name: "Location 2", Description: "Description 2", Address: "Address 2", Lat: 2.0, Lng: 2.0}
 

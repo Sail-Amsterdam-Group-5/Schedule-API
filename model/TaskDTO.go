@@ -1,6 +1,8 @@
 package model
 
 type TaskDTO struct {
+	PrimaryKey  string      `json:"primaryKey"` // has to be string
+	RowKey      string      `json:"rowKey"`     // has to be string
 	Id          int         `json:"id"`
 	GroupId     int         `json:"groupId"`
 	Name        string      `json:"name"`
