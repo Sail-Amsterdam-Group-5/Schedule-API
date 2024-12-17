@@ -81,6 +81,24 @@ func ReadFilter(tableName string, filter string, value string) {
 	return readEntities
 }
 
+func ReadDuoFilter(tableName string, filter1 string, value1 string, filter2 string, value2 string) {
+	serviceClient := Connection()
+	tableClient := serviceClient.NewTableClient(tableName)
+
+	query := aztables.Query{
+		Filter: aztables.Filter{
+			FilterString: filter1 + " eq " + value1 + " and " + filter2 + " eq " + value2,
+		},
+	}
+
+	readEntities, err := tableClient.QueryEntities(context.Background(), &query, nil)
+	if err != nil {
+		log.Fatalf("Failed to read entities: %v", err)
+	}
+
+	return readEntities
+}
+
 func Delete(tableName string, pk string, rk string) {
 	serviceClient := Connection()
 	tableClient := serviceClient.NewTableClient(tableName)

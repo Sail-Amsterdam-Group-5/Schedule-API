@@ -33,9 +33,9 @@ func GetAllTaskForUser(groupId string) []model.TaskDTO {
 
 // get all for date
 
-func GetAllTaskForDate(date string) []model.TaskDTO {
+func GetAllTaskForDate(date string, groupId string) []model.TaskDTO {
 
-	tasks := repository.ReadFilter("Tasks", "Date", date)
+	tasks := repository.ReadDuoFilter("Tasks", "Date", date, "GroupId", groupId)
 
 	return tasks
 
@@ -53,14 +53,16 @@ func GetTaskById(id string) model.TaskDTO {
 
 // update a task
 
-func UpdateTask(task model.TaskDTO) {
+func UpdateTask(task model.TaskDTO) bool {
 	repository.Update("Tasks", task.PrimaryKey, task.RowKey, task)
+	return true
 }
 
 // delete a task
 
-func DeleteTask(pk string, rk string) {
+func DeleteTask(pk string, rk string) bool {
 	repository.Delete("Tasks", pk, rk)
+	return true
 }
 
 // create a task
