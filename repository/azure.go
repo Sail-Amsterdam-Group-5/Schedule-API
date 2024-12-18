@@ -7,21 +7,22 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/data/aztables"
 )
 
-func Connection() *aztables.ServiceClient {
-	connectionString := "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xW5frD4+T3ONKi7J1LPttwEELEdmAzx4nwAZv1r2cuX6kftoG3nUg==;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
+func Connection(tableName string) *aztables.Client {
+	connectionString := "UseDevelopmentStorage=true"
 
 	serviceClient, err := aztables.NewServiceClientFromConnectionString(connectionString, nil)
-	tableClient := serviceClient.NewTableClient(tableName)
+
+	client := serviceClient.NewClient(tableName)
 
 	if err != nil {
 		log.Fatalf("Failed to create service client: %v", err)
 	}
-	return tableClient
+	return client
 }
 
 func Write(tableName string, pk string, rk string, data map[string]interface{}) {
-	serviceClient := Connection()
-	tableClient := serviceClient.NewTableClient(tableName)
+	client := Connection(tableName)
+	// tableClient := serviceClient.NewTableClient(tableName)
 
 	entity := aztables.EDMEntity{
 		PartitionKey: pk,
@@ -29,15 +30,14 @@ func Write(tableName string, pk string, rk string, data map[string]interface{}) 
 		Properties:   data,
 	}
 
-	_, err := tableClient.AddEntity(context.Background(), entity, nil)
+	_, err := client.AddEntity(entity)
 	if err != nil {
 		log.Fatalf("Failed to add entity: %v", err)
 	}
 }
 
 func Create(tableName string, data map[string]interface{}) {
-	serviceClient := Connection()
-	tableClient := serviceClient.NewTableClient(tableName)
+	serviceClient := Connection(tableName)
 
 	entity := aztables.EDMEntity{
 		PartitionKey: data["PartitionKey"].(string),
@@ -45,7 +45,7 @@ func Create(tableName string, data map[string]interface{}) {
 		Properties:   data,
 	}
 
-	_, err := tableClient.AddEntity(context.Background(), entity, nil)
+	_, err := serviceClient.AddEntity(context.Background(), entity, nil)
 	if err != nil {
 		log.Fatalf("Failed to add entity: %v", err)
 	}
