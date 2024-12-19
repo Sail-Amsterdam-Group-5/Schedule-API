@@ -156,12 +156,16 @@ func Update(ctx context.Context, tableName string, pk string, rk string, data ma
 	}
 
 	entity := aztables.EDMEntity{
-		PartitionKey: pk,
-		RowKey:       rk,
 		Properties:   data,
+		Entity: 	 aztables.Entity{PartitionKey: pk, RowKey: rk},
 	}
 
-	_, err = client.UpdateEntity(ctx, entity, nil)
+	jsonEntity, err := json.Marshal(entity)
+	if err != nil {
+		return fmt.Errorf("failed to marshal entity: %w", err)
+	}
+
+	_, err = client.UpdateEntity(ctx, jsonEntity, nil)
 	if err != nil {
 		return fmt.Errorf("failed to update entity: %w", err)
 	}
