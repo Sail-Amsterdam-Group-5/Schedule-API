@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"schedule-api/controller"
 	"schedule-api/docs"
 	middleware "schedule-api/middleware"
@@ -32,6 +33,10 @@ func main() {
 		schedule.POST("/task/:id", middleware.CheckScope("volunteer"), controller.CheckIn)
 		schedule.PATCH("/task/:id", middleware.CheckScope("volunteer"), controller.CancelTask)
 	}
+	port := os.Getenv("HTTP_PLATFORM_PORT")
+	if port == "" {
+		port = "8080"
+	}
 
-	router.Run(":8080")
+	router.Run(":" + port)
 }
