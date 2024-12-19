@@ -52,11 +52,19 @@ func ReadSingle(ctx context.Context, tableName string, pk string, rk string) (*a
 		return nil, err
 	}
 
-	entity, err := client.GetEntity(ctx, pk, rk, nil)
+	resp, err := client.GetEntity(ctx, pk, rk, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read entity: %w", err)
 	}
-	return entity, nil
+
+	//convert from entity to EDMEntity
+	var entity aztables.EDMEntity
+	err = json.Unmarshal(resp.Value, &entity)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse entity: %w", err)
+	}
+
+	return &entity, nil
 }
 
 // ReadFilter fetches entities based on a single filter condition.
