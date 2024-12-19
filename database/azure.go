@@ -97,18 +97,40 @@ func ReadAll(ctx context.Context, tableName string) ([]aztables.EDMEntity, error
 		return nil, err
 	}
 
-	pager := client.ListEntities(nil)
+	// pager := client.ListEntities(nil)
+	// var entities []aztables.EDMEntity
+
+	// for pager.NextPage(ctx) {
+	// 	for _, entity := range pager.PageResponse().Entities {
+	// 		entities = append(entities, entity)
+	// 	}
+	// }
+
+	// if err = pager.Err(); err != nil {
+	// 	return nil, fmt.Errorf("failed to query entities: %w", err)
+	// }
+	// return entities, nil
+
+	pager := client.NewListEntitiesPager(nil)
 	var entities []aztables.EDMEntity
 
-	for pager.NextPage(ctx) {
-		for _, entity := range pager.PageResponse().Entities {
-			entities = append(entities, entity)
+	for pager.More() {
+		resp, err := pager.NextPage(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("failed to query entities: %w", err)
+		}
+
+		for _, entity := range resp.Entities {
+			var edmEntity aztables.EDMEntity
+			err = json.Unmarshal(entity, &edmEntity)
+			if err != nil {
+				return nil, fmt.Errorf("failed to parse entity: %w", err)
+			}
+
+			entities = append(entities, edmEntity)
 		}
 	}
 
-	if err = pager.Err(); err != nil {
-		return nil, fmt.Errorf("failed to query entities: %w", err)
-	}
 	return entities, nil
 }
 
