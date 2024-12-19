@@ -3,7 +3,6 @@ package controller
 import (
 	"net/http"
 
-	"schedule-api/model"
 	"schedule-api/service"
 
 	"github.com/gin-gonic/gin"
@@ -126,10 +125,11 @@ func DeleteTask(c *gin.Context) {
 // @Success 200 {object} model.CheckInDTO
 // @Router /schedule/task/{id} [post]
 func CheckIn(c *gin.Context) {
-	// taskId := c.Param("id")
-	// userId :=
+	taskId := c.Param("id")
+	userId := c.Request.BasicAuth("id")
 
-	var checkin model.CheckInDTO
+	checkin := service.Checkin(userId, taskId)
+
 	// Here you would upload the checkin to the database.
 	c.JSON(http.StatusOK, checkin)
 }
@@ -141,10 +141,11 @@ func CheckIn(c *gin.Context) {
 // @Success 200 {object} model.CheckInDTO
 // @Router /schedule/task/{id} [patch]
 func CancelTask(c *gin.Context) {
-	// taskId := c.Param("id")
-	// userId :=
+	taskId := c.Param("id")
+	userId := c.Request.BasicAuth("id")
 
-	var checkin model.CheckInDTO
+	checkin := service.CancelTask(userId, taskId)
+
 	// Here you would upload the cancel to the database.
 	c.JSON(http.StatusOK, checkin)
 }

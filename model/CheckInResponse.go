@@ -1,11 +1,6 @@
 package model
 
-type CheckInDTO struct {
-	// pk := taskID
-	// rk := userID + checkInTime
-
-	PrimaryKey    string `json:"primaryKey"`
-	RowKey        string `json:"rowKey"`
+type CheckInResponse struct {
 	CheckInId     string `json:"checkinId"`
 	UserId        string `json:"userId"`
 	TaskId        string `json:"taskId"`

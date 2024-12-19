@@ -1,8 +1,8 @@
 package repository
 
 import (
+	"schedule-api/database"
 	"schedule-api/model"
-	"schedule-api/repository"
 )
 
 // get all for user
@@ -28,14 +28,14 @@ func GetAllTaskForUser(groupId string) []model.TaskDTO {
 	// 	},
 	// }
 
-	return repository.ReadFilter("Tasks", "GroupId", groupId)
+	return database.ReadFilter("Tasks", "GroupId", groupId)
 }
 
 // get all for date
 
 func GetAllTaskForDate(date string, groupId string) []model.TaskDTO {
 
-	tasks := repository.ReadDuoFilter("Tasks", "Date", date, "GroupId", groupId)
+	tasks := database.ReadDuoFilter("Tasks", "Date", date, "GroupId", groupId)
 
 	return tasks
 
@@ -45,7 +45,7 @@ func GetAllTaskForDate(date string, groupId string) []model.TaskDTO {
 
 func GetTaskById(id string) model.TaskDTO {
 
-	task := repository.ReadSingle("Tasks", "Id", id)
+	task := database.ReadSingle("Tasks", "Id", id)
 
 	return task
 
@@ -54,19 +54,19 @@ func GetTaskById(id string) model.TaskDTO {
 // update a task
 
 func UpdateTask(task model.TaskDTO) bool {
-	repository.Update("Tasks", task.PrimaryKey, task.RowKey, task)
+	database.Update("Tasks", task.PrimaryKey, task.RowKey, task)
 	return true
 }
 
 // delete a task
 
 func DeleteTask(pk string, rk string) bool {
-	repository.Delete("Tasks", pk, rk)
+	database.Delete("Tasks", pk, rk)
 	return true
 }
 
 // create a task
 
 func CreateTask(task model.TaskDTO) {
-	repository.Create("Tasks", task)
+	database.Create("Tasks", task)
 }

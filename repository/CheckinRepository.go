@@ -1,13 +1,21 @@
 package repository
 
 import (
+	"schedule-api/database"
 	"schedule-api/model"
-	"schedule-api/repository"
 )
 
 func SaveCheckIn(dto model.CheckInDTO) {
-	pk := dto.TaskId
-	rk := dto.UserId + dto.CheckInTime
+	pk := dto.PrimaryKey
+	rk := dto.RowKey
 
-	repository.Write("CheckIn", pk, rk, dto)
+	database.Write("CheckIn", pk, rk, dto)
+}
+
+func GetCheckin(id string) {
+	return database.ReadSingle("CheckIn", id, id)
+}
+
+func GetAllCheckins() {
+	return database.ReadAll("CheckIn")
 }
