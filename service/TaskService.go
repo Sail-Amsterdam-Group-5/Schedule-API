@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"encoding/json"
 	"schedule-api/model"
 	"schedule-api/repository"
@@ -10,35 +11,35 @@ import (
 )
 
 // get all for user
-func GetAllTaskForUser(userId string) ([]byte, error) {
+func GetAllTaskForUser(ctx context.Context, userId string) ([]byte, error) {
 
-	tasks := repository.GetAllTaskForUser(userId)
+	tasks := repository.GetAllTaskForUser(ctx, userId)
 	return json.Marshal(tasks)
 }
 
 // get all for date
-func GetAllTaskForDate(date string, groupId string) ([]byte, error) {
-	tasks := repository.GetAllTaskForDate(date, groupId)
+func GetAllTaskForDate(ctx context.Context, date string, groupId string) ([]byte, error) {
+	tasks := repository.GetAllTaskForDate(ctx, date, groupId)
 	return json.Marshal(tasks)
 }
 
 // get by id
-func GetTaskById(id string) model.TaskDTO {
-	return repository.GetTaskById(id)
+func GetTaskById(ctx context.Context, id string) model.TaskDTO {
+	return repository.GetTaskById(ctx, id)
 }
 
 // update a task
-func UpdateTask(task model.TaskDTO) bool {
-	return repository.UpdateTask(task)
+func UpdateTask(c context.Context, task model.TaskDTO) bool {
+	return repository.UpdateTask(c, task)
 }
 
 // delete a task
-func DeleteTask(pk string, rk string) bool {
-	return repository.DeleteTask(pk, rk)
+func DeleteTask(ctx context.Context, pk string, rk string) bool {
+	return repository.DeleteTask(ctx, pk, rk)
 }
 
 // create a task
-func CreateTask(task model.Task) model.TaskDTO {
+func CreateTask(ctx context.Context, task model.Task) model.TaskDTO {
 	id, err := uuid.NewRandom()
 	if err != nil {
 		panic(err)
@@ -57,7 +58,7 @@ func CreateTask(task model.Task) model.TaskDTO {
 		Location:    task.Location,
 	}
 
-	repository.CreateTask(taskDTO)
+	repository.CreateTask(ctx, taskDTO)
 
 	return taskDTO
 }

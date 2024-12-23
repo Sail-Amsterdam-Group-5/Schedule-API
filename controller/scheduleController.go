@@ -3,6 +3,7 @@ package controller
 import (
 	"net/http"
 
+	"schedule-api/model"
 	"schedule-api/service"
 
 	"github.com/gin-gonic/gin"
@@ -16,7 +17,7 @@ import (
 // @Router /schedule/{date} [get]
 func GetSchedule(c *gin.Context) {
 	date := c.Param("date")
-	id := c.Request.BasicAuth("id") // TODO: need to get groupID exually
+	id := "1" // TODO: need to get groupID exually
 	// Get the schedule
 	schedule, err := service.GetAllTaskForDate(date, id)
 
@@ -38,7 +39,7 @@ func GetSchedule(c *gin.Context) {
 // @Router /schedule/{date}/{groupid} [get]
 func GetTasks(c *gin.Context) {
 	date := c.Param("date")
-	id := c.Request.BasicAuth("id") // TODO: need to get groupID exually
+	id := "1" // TODO: need to get groupID exually
 	// Get the schedule
 	schedule, err := service.GetAllTaskForDate(date, id)
 
@@ -73,15 +74,20 @@ func GetTask(c *gin.Context) {
 // @Success 200 {object} model.TaskDTO
 // @Router /schedule/task [post]
 func CreateTask(c *gin.Context) {
-	schedule := service.CreateTask(c.Request.Body.Read()) // TODO: need more research on this
+	var task model.Task
+	// Bind JSON naar het model
+	if err := c.ShouldBindJSON(&task); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-	// if err != nil {
-	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-	// 	return
-	// }
+	schedule := service.CreateTask(task) // TODO: need more research on this
 
 	// // Return the schedule
-	c.JSON(http.StatusOK, schedule)
+	c.JSON(http.StatusOK, gin.H{
+		"Message": "Task created succesfully",
+		"task":    schedule,
+	})
 }
 
 // UpdateTask creates a Task.
@@ -92,10 +98,15 @@ func CreateTask(c *gin.Context) {
 // @Success 200 {object} model.TaskDTO
 // @Router /schedule/task/{id} [put]
 func UpdateTask(c *gin.Context) {
+	var task model.TaskDTO
+	if err := c.ShouldBindJSON(&task); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-	id := c.Param("id")
-	toUpdate := c.Request.Body.Read() // TODO: need more research on this
-	update := service.UpdateTask(toUpdate)
+	//id := c.Param("id")
+	//toUpdate := c.Request.Body.Read() // TODO: need more research on this
+	update := service.UpdateTask(c.Request.Context(), task)
 
 	c.JSON(http.StatusOK, update)
 }
@@ -126,7 +137,7 @@ func DeleteTask(c *gin.Context) {
 // @Router /schedule/task/{id} [post]
 func CheckIn(c *gin.Context) {
 	taskId := c.Param("id")
-	userId := c.Request.BasicAuth("id")
+	userId := "1"
 
 	checkin := service.Checkin(userId, taskId)
 
@@ -142,7 +153,7 @@ func CheckIn(c *gin.Context) {
 // @Router /schedule/task/{id} [patch]
 func CancelTask(c *gin.Context) {
 	taskId := c.Param("id")
-	userId := c.Request.BasicAuth("id")
+	userId := "1"
 
 	checkin := service.CancelTask(userId, taskId)
 
