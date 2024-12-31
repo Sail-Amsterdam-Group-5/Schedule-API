@@ -19,7 +19,7 @@ func GetSchedule(c *gin.Context) {
 	date := c.Param("date")
 	id := "1" // TODO: need to get groupID exually
 	// Get the schedule
-	schedule, err := service.GetAllTaskForDate(date, id)
+	schedule, err := service.GetAllTaskForDate(c.Request.Context(), date, id)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -41,7 +41,7 @@ func GetTasks(c *gin.Context) {
 	date := c.Param("date")
 	id := "1" // TODO: need to get groupID exually
 	// Get the schedule
-	schedule, err := service.GetAllTaskForDate(date, id)
+	schedule, err := service.GetAllTaskForDate(c.Request.Context(), date, id)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -61,7 +61,7 @@ func GetTasks(c *gin.Context) {
 func GetTask(c *gin.Context) {
 	taskid := c.Param("ID")
 
-	task := service.GetTaskById(taskid)
+	task := service.GetTaskById(c.Request.Context(), taskid)
 
 	// // Return the schedule
 	c.JSON(http.StatusOK, task)
@@ -81,7 +81,7 @@ func CreateTask(c *gin.Context) {
 		return
 	}
 
-	schedule := service.CreateTask(task) // TODO: need more research on this
+	schedule := service.CreateTask(c.Request.Context(), task) // TODO: need more research on this
 
 	// // Return the schedule
 	c.JSON(http.StatusOK, gin.H{
@@ -119,8 +119,8 @@ func UpdateTask(c *gin.Context) {
 // @Router /schedule/task/{id} [delete]
 func DeleteTask(c *gin.Context) {
 	id := c.Param("ID")
-	task := service.GetTaskById(id)
-	delete := service.DeleteTask(task.PrimaryKey, task.RowKey)
+	task := service.GetTaskById(c.Request.Context(), id)
+	delete := service.DeleteTask(c.Request.Context(), task.PrimaryKey, task.RowKey)
 
 	if delete == false {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete task"})
@@ -139,7 +139,7 @@ func CheckIn(c *gin.Context) {
 	taskId := c.Param("id")
 	userId := "1"
 
-	checkin := service.Checkin(userId, taskId)
+	checkin := service.Checkin(c.Request.Context(), userId, taskId)
 
 	// Here you would upload the checkin to the database.
 	c.JSON(http.StatusOK, checkin)
@@ -155,7 +155,7 @@ func CancelTask(c *gin.Context) {
 	taskId := c.Param("id")
 	userId := "1"
 
-	checkin := service.CancelTask(userId, taskId)
+	checkin := service.CancelTask(c.Request.Context(), userId, taskId)
 
 	// Here you would upload the cancel to the database.
 	c.JSON(http.StatusOK, checkin)
