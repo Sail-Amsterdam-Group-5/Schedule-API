@@ -75,30 +75,33 @@ func GetAllTaskForDate(ctx context.Context, date string, groupId string) []model
 }
 
 // get by id
-
+// TODO: Need to look into readsingle
 func GetTaskById(ctx context.Context, id string) model.TaskDTO {
-
-	task, err := database.ReadSingle(ctx, "Tasks", "Id", id)
+	filter := database.BuildFilter("Id", id)
+	task, err := database.ReadFilter(ctx, "Tasks", filter)
 	if err == nil {
 		return model.TaskDTO{}
 	}
 
-	taskDTO := model.TaskDTO{
-		Id:          task.Properties["Id"].(string),
-		GroupId:     task.Properties["GroupId"].(int),
-		Name:        task.Properties["Name"].(string),
-		Description: task.Properties["Description"].(string),
-		Date:        task.Properties["Date"].(string),
-		StartTime:   task.Properties["StartTime"].(string),
-		EndTime:     task.Properties["EndTime"].(string),
-		Location: model.LocationDTO{
-			Id:          task.Properties["Location"].(map[string]any)["Id"].(int),
-			Name:        task.Properties["Location"].(map[string]any)["Name"].(string),
-			Description: task.Properties["Location"].(map[string]any)["Description"].(string),
-			Address:     task.Properties["Location"].(map[string]any)["Address"].(string),
-			Lat:         task.Properties["Location"].(map[string]any)["Lat"].(float64),
-			Lng:         task.Properties["Location"].(map[string]any)["Lng"].(float64),
-		},
+	taskDTO := model.TaskDTO{}
+	if len(task) > 0 {
+		taskDTO = model.TaskDTO{
+			Id:          task[0].Properties["Id"].(string),
+			GroupId:     task[0].Properties["GroupId"].(int),
+			Name:        task[0].Properties["Name"].(string),
+			Description: task[0].Properties["Description"].(string),
+			Date:        task[0].Properties["Date"].(string),
+			StartTime:   task[0].Properties["StartTime"].(string),
+			EndTime:     task[0].Properties["EndTime"].(string),
+			Location: model.LocationDTO{
+				Id:          task[0].Properties["Location"].(map[string]any)["Id"].(int),
+				Name:        task[0].Properties["Location"].(map[string]any)["Name"].(string),
+				Description: task[0].Properties["Location"].(map[string]any)["Description"].(string),
+				Address:     task[0].Properties["Location"].(map[string]any)["Address"].(string),
+				Lat:         task[0].Properties["Location"].(map[string]any)["Lat"].(float64),
+				Lng:         task[0].Properties["Location"].(map[string]any)["Lng"].(float64),
+			},
+		}
 	}
 
 	return taskDTO
