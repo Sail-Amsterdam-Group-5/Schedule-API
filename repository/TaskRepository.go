@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"schedule-api/database"
 	"schedule-api/model"
 )
@@ -26,14 +26,15 @@ func GetAllTaskForUser(ctx context.Context, groupId string) []model.TaskDTO {
 			Date:        entity.Properties["Date"].(string),
 			StartTime:   entity.Properties["StartTime"].(string),
 			EndTime:     entity.Properties["EndTime"].(string),
-			Location: model.LocationDTO{
-				Id:          entity.Properties["Location"].(map[string]any)["Id"].(int),
-				Name:        entity.Properties["Location"].(map[string]any)["Name"].(string),
-				Description: entity.Properties["Location"].(map[string]any)["Description"].(string),
-				Address:     entity.Properties["Location"].(map[string]any)["Address"].(string),
-				Lat:         entity.Properties["Location"].(map[string]any)["Lat"].(float64),
-				Lng:         entity.Properties["Location"].(map[string]any)["Lng"].(float64),
-			},
+			Location:    entity.Properties["Location"].(string),
+			// Location: model.LocationDTO{
+			// 	Id:          entity.Properties["Location"].(map[string]any)["Id"].(int),
+			// 	Name:        entity.Properties["Location"].(map[string]any)["Name"].(string),
+			// 	Description: entity.Properties["Location"].(map[string]any)["Description"].(string),
+			// 	Address:     entity.Properties["Location"].(map[string]any)["Address"].(string),
+			// 	Lat:         entity.Properties["Location"].(map[string]any)["Lat"].(float64),
+			// 	Lng:         entity.Properties["Location"].(map[string]any)["Lng"].(float64),
+			// },
 		}
 		tasks = append(tasks, task)
 	}
@@ -60,14 +61,15 @@ func GetAllTaskForDate(ctx context.Context, date string, groupId string) []model
 			Date:        entity.Properties["Date"].(string),
 			StartTime:   entity.Properties["StartTime"].(string),
 			EndTime:     entity.Properties["EndTime"].(string),
-			Location: model.LocationDTO{
-				Id:          entity.Properties["Location"].(map[string]any)["Id"].(int),
-				Name:        entity.Properties["Location"].(map[string]any)["Name"].(string),
-				Description: entity.Properties["Location"].(map[string]any)["Description"].(string),
-				Address:     entity.Properties["Location"].(map[string]any)["Address"].(string),
-				Lat:         entity.Properties["Location"].(map[string]any)["Lat"].(float64),
-				Lng:         entity.Properties["Location"].(map[string]any)["Lng"].(float64),
-			},
+			Location:    entity.Properties["Location"].(string),
+			// Location: model.LocationDTO{
+			// 	Id:          entity.Properties["Location"].(map[string]any)["Id"].(int),
+			// 	Name:        entity.Properties["Location"].(map[string]any)["Name"].(string),
+			// 	Description: entity.Properties["Location"].(map[string]any)["Description"].(string),
+			// 	Address:     entity.Properties["Location"].(map[string]any)["Address"].(string),
+			// 	Lat:         entity.Properties["Location"].(map[string]any)["Lat"].(float64),
+			// 	Lng:         entity.Properties["Location"].(map[string]any)["Lng"].(float64),
+			// },
 		}
 		tasks = append(tasks, task)
 	}
@@ -76,36 +78,30 @@ func GetAllTaskForDate(ctx context.Context, date string, groupId string) []model
 }
 
 // get by id
-// TODO: Need to look into readsingle
 func GetTaskById(ctx context.Context, id string) (model.TaskDTO, error) {
 	filter := database.BuildFilter("Id", id)
 	task, err := database.ReadFilter(ctx, "Tasks", filter)
-	fmt.Println(task)
 	if err != nil {
 		return model.TaskDTO{}, err
 	}
-	fmt.Println(task)
-	taskDTO := model.TaskDTO{}
+
 	if len(task) > 0 {
-		taskDTO = model.TaskDTO{
+		gid := task[0].Properties["GroupId"].(int32)
+		taskDTO := model.TaskDTO{
+			PrimaryKey:  task[0].PartitionKey,
+			RowKey:      task[0].RowKey,
 			Id:          task[0].Properties["Id"].(string),
-			GroupId:     task[0].Properties["GroupId"].(int),
+			GroupId:     int(gid),
 			Name:        task[0].Properties["Name"].(string),
 			Description: task[0].Properties["Description"].(string),
 			Date:        task[0].Properties["Date"].(string),
 			StartTime:   task[0].Properties["StartTime"].(string),
 			EndTime:     task[0].Properties["EndTime"].(string),
-			Location: model.LocationDTO{
-				Id:          task[0].Properties["Location"].(map[string]any)["Id"].(int),
-				Name:        task[0].Properties["Location"].(map[string]any)["Name"].(string),
-				Description: task[0].Properties["Location"].(map[string]any)["Description"].(string),
-				Address:     task[0].Properties["Location"].(map[string]any)["Address"].(string),
-				Lat:         task[0].Properties["Location"].(map[string]any)["Lat"].(float64),
-				Lng:         task[0].Properties["Location"].(map[string]any)["Lng"].(float64),
-			},
+			Location:    task[0].Properties["Location"].(string),
 		}
+		return taskDTO, nil
 	}
-	return taskDTO, nil
+	return model.TaskDTO{}, errors.New("task not found")
 }
 
 // update a task
@@ -119,14 +115,15 @@ func UpdateTask(c context.Context, task model.TaskDTO) bool {
 		"Date":        task.Date,
 		"StartTime":   task.StartTime,
 		"EndTime":     task.EndTime,
-		"Location": map[string]interface{}{
-			"Id":          task.Location.Id,
-			"Name":        task.Location.Name,
-			"Description": task.Location.Description,
-			"Address":     task.Location.Address,
-			"Lat":         task.Location.Lat,
-			"Lng":         task.Location.Lng,
-		},
+		"Location":    task.Location,
+		// "Location": map[string]interface{}{
+		// 	"Id":          task.Location.Id,
+		// 	"Name":        task.Location.Name,
+		// 	"Description": task.Location.Description,
+		// 	"Address":     task.Location.Address,
+		// 	"Lat":         task.Location.Lat,
+		// 	"Lng":         task.Location.Lng,
+		// },
 	}
 	database.Update(c, "Tasks", task.PrimaryKey, task.RowKey, taskMap)
 	return true
@@ -150,15 +147,16 @@ func CreateTask(ctx context.Context, task model.TaskDTO) (model.TaskDTO, error) 
 		"Date":        task.Date,
 		"StartTime":   task.StartTime,
 		"EndTime":     task.EndTime,
-		"Location": map[string]interface{}{
-			"Id":          task.Location.Id,
-			"Name":        task.Location.Name,
-			"Description": task.Location.Description,
-			"Address":     task.Location.Address,
-			"Lat":         task.Location.Lat,
-			"Lng":         task.Location.Lng,
-		},
+		"Location":    task.Location,
+		// "Location": map[string]interface{}{
+		// 	"Id": task.Location,
+		// "Name":        task.Location.Name,
+		// "Description": task.Location.Description,
+		// "Address":     task.Location.Address,
+		// "Lat":         task.Location.Lat,
+		// "Lng":         task.Location.Lng,
 	}
+
 	err := database.Write(ctx, "Tasks", task.PrimaryKey, task.RowKey, taskMap)
 	if err != nil {
 		return model.TaskDTO{}, err

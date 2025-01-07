@@ -55,9 +55,8 @@ func Write(ctx context.Context, tableName string, pk string, rk string, data map
 		Entity:     entity,
 		Properties: data,
 	}
-	fmt.Println(EDMEntity)
 
-	jsonEntity, err := json.Marshal(entity)
+	jsonEntity, err := json.Marshal(EDMEntity)
 	if err != nil {
 		return err
 	}
