@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/Azure/azure-sdk-for-go/sdk/data/aztables"
@@ -44,19 +45,24 @@ func Write(ctx context.Context, tableName string, pk string, rk string, data map
 		return err
 	}
 
-	entity := aztables.EDMEntity{
-		Properties: data,
-		Entity:     aztables.Entity{PartitionKey: pk, RowKey: rk, Timestamp: aztables.EDMDateTime{}},
+	entity := aztables.Entity{
+		PartitionKey: pk,
+		RowKey:       rk,
+		Timestamp:    aztables.EDMDateTime(time.Now()),
 	}
-	fmt.Println(entity)
 
-	json, err := json.Marshal(entity)
+	EDMEntity := aztables.EDMEntity{
+		Entity:     entity,
+		Properties: data,
+	}
+	fmt.Println(EDMEntity)
+
+	jsonEntity, err := json.Marshal(entity)
 	if err != nil {
 		return err
 	}
 
-	_, err = client.AddEntity(ctx, json, nil)
-	fmt.Println(err)
+	_, err = client.AddEntity(ctx, jsonEntity, nil)
 	if err != nil {
 		return err
 	}
