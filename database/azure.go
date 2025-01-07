@@ -13,7 +13,6 @@ import (
 
 // Connection creates a new Azure Table client for the given table name.
 func Connection(tableName string) (*aztables.Client, error) {
-	//connectionString := "UseDevelopmentStorage=true"
 	connectionString := "DefaultEndpointsProtocol=https;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
 	if connectionString == "" {
 		return nil, fmt.Errorf("AZURE_STORAGE_CONNECTION_STRING is not set")
