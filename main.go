@@ -1,17 +1,24 @@
 package main
 
 import (
+	"log"
 	"os"
 	"schedule-api/controller"
 	"schedule-api/docs"
 	middleware "schedule-api/middleware"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("Error loading .env file: %v", err)
+	}
+
 	router := gin.Default()
 
 	// Initialize Swagger doc info
@@ -25,10 +32,10 @@ func main() {
 	{
 		schedule.GET("/:date", middleware.CheckScope("volunteer"), controller.GetSchedule)
 
-		schedule.POST("/task", middleware.CheckScope("team-lead"), controller.CreateTask)
+		schedule.POST("/task", middleware.CheckScope("team-lead"), controller.CreateTask) //
 
-		schedule.GET("/task/:id", middleware.CheckScope("volunteer"), controller.GetTask)
-		schedule.PUT("/task/:id", middleware.CheckScope("team-lead"), controller.UpdateTask)
+		schedule.GET("/task/:id", middleware.CheckScope("volunteer"), controller.GetTask)    //
+		schedule.PUT("/task/:id", middleware.CheckScope("team-lead"), controller.UpdateTask) //
 		schedule.DELETE("/task/:id", middleware.CheckScope("team-lead"), controller.DeleteTask)
 		schedule.POST("/task/:id", middleware.CheckScope("volunteer"), controller.CheckIn)
 		schedule.PATCH("/task/:id", middleware.CheckScope("volunteer"), controller.CancelTask)
