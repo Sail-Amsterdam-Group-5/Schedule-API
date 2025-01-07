@@ -43,9 +43,10 @@ func GetAllTaskForDate(ctx context.Context, date string, groupId string) []model
 
 	var tasks []model.TaskDTO
 	for _, entity := range entities {
+		gid := entity.Properties["GroupId"].(int32)
 		task := model.TaskDTO{
 			Id:          entity.Properties["Id"].(string),
-			GroupId:     entity.Properties["GroupId"].(int),
+			GroupId:     int(gid),
 			Name:        entity.Properties["Name"].(string),
 			Description: entity.Properties["Description"].(string),
 			Date:        entity.Properties["Date"].(string),
