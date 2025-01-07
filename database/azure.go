@@ -3,21 +3,34 @@ package database
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/Azure/azure-sdk-for-go/sdk/data/aztables"
 )
 
 // Connection creates a new Azure Table client for the given table name.
 func Connection(tableName string) (*aztables.Client, error) {
-	connectionString := "UseDevelopmentStorage=true"
+	//connectionString := "UseDevelopmentStorage=true"
+	connectionString := "DefaultEndpointsProtocol=https;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
 	if connectionString == "" {
 		return nil, fmt.Errorf("AZURE_STORAGE_CONNECTION_STRING is not set")
 	}
-
 	serviceClient, err := aztables.NewServiceClientFromConnectionString(connectionString, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create service client: %w", err)
+	}
+
+	// Check if the table exists, if not create it
+	_, err = serviceClient.CreateTable(context.Background(), tableName, nil)
+	if err != nil {
+		var responseError *azcore.ResponseError
+		if errors.As(err, &responseError) && responseError.ErrorCode == "TableAlreadyExists" {
+			// Table already exists, ignore the error
+		} else {
+			return nil, fmt.Errorf("failed to create table: %w", err)
+		}
 	}
 
 	client := serviceClient.NewClient(tableName)
@@ -33,15 +46,21 @@ func Write(ctx context.Context, tableName string, pk string, rk string, data map
 
 	entity := aztables.EDMEntity{
 		Properties: data,
-		Entity:     aztables.Entity{PartitionKey: pk, RowKey: rk},
+		Entity:     aztables.Entity{PartitionKey: pk, RowKey: rk, Timestamp: aztables.EDMDateTime{}},
 	}
+	fmt.Println(entity)
 
 	json, err := json.Marshal(entity)
+	if err != nil {
+		return err
+	}
 
 	_, err = client.AddEntity(ctx, json, nil)
+	fmt.Println(err)
 	if err != nil {
-		return fmt.Errorf("failed to add entity: %w", err)
+		return err
 	}
+
 	return nil
 }
 

@@ -59,9 +59,13 @@ func GetTasks(c *gin.Context) {
 // @Success 200 {object} model.TaskDTO
 // @Router /schedule/task/{id} [get]
 func GetTask(c *gin.Context) {
-	taskid := c.Param("ID")
+	taskid := c.Param("id")
 
-	task := service.GetTaskById(c.Request.Context(), taskid)
+	task, err := service.GetTaskById(c.Request.Context(), taskid)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	// // Return the schedule
 	c.JSON(http.StatusOK, task)
@@ -72,21 +76,27 @@ func GetTask(c *gin.Context) {
 // @Description Create a new task
 // @Param task body model.Task true "Task"
 // @Success 200 {object} model.TaskDTO
+// @Failure 500 {object} string
 // @Router /schedule/task [post]
 func CreateTask(c *gin.Context) {
 	var task model.Task
-	// Bind JSON naar het model
+	// Bind JSON too the model
 	if err := c.ShouldBindJSON(&task); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	schedule := service.CreateTask(c.Request.Context(), task) // TODO: need more research on this
+	response, err := service.CreateTask(c.Request.Context(), task)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	// // Return the schedule
 	c.JSON(http.StatusOK, gin.H{
 		"Message": "Task created succesfully",
-		"task":    schedule,
+		"task":    response,
 	})
 }
 
@@ -104,9 +114,12 @@ func UpdateTask(c *gin.Context) {
 		return
 	}
 
-	//id := c.Param("id")
-	//toUpdate := c.Request.Body.Read() // TODO: need more research on this
-	update := service.UpdateTask(c.Request.Context(), task)
+	update, err := service.UpdateTask(c.Request.Context(), task)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	c.JSON(http.StatusOK, update)
 }
@@ -119,10 +132,16 @@ func UpdateTask(c *gin.Context) {
 // @Router /schedule/task/{id} [delete]
 func DeleteTask(c *gin.Context) {
 	id := c.Param("ID")
-	task := service.GetTaskById(c.Request.Context(), id)
+	task, err := service.GetTaskById(c.Request.Context(), id)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	delete := service.DeleteTask(c.Request.Context(), task.PrimaryKey, task.RowKey)
 
-	if delete == false {
+	if !delete {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete task"})
 	}
 	// Here you would delete the task from the database using the id.

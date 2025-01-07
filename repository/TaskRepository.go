@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 	"schedule-api/database"
 	"schedule-api/model"
 )
@@ -76,13 +77,14 @@ func GetAllTaskForDate(ctx context.Context, date string, groupId string) []model
 
 // get by id
 // TODO: Need to look into readsingle
-func GetTaskById(ctx context.Context, id string) model.TaskDTO {
+func GetTaskById(ctx context.Context, id string) (model.TaskDTO, error) {
 	filter := database.BuildFilter("Id", id)
 	task, err := database.ReadFilter(ctx, "Tasks", filter)
-	if err == nil {
-		return model.TaskDTO{}
+	fmt.Println(task)
+	if err != nil {
+		return model.TaskDTO{}, err
 	}
-
+	fmt.Println(task)
 	taskDTO := model.TaskDTO{}
 	if len(task) > 0 {
 		taskDTO = model.TaskDTO{
@@ -103,9 +105,7 @@ func GetTaskById(ctx context.Context, id string) model.TaskDTO {
 			},
 		}
 	}
-
-	return taskDTO
-
+	return taskDTO, nil
 }
 
 // update a task
@@ -141,7 +141,7 @@ func DeleteTask(ctx context.Context, pk string, rk string) bool {
 
 // create a task
 
-func CreateTask(ctx context.Context, task model.TaskDTO) {
+func CreateTask(ctx context.Context, task model.TaskDTO) (model.TaskDTO, error) {
 	taskMap := map[string]interface{}{
 		"Id":          task.Id,
 		"GroupId":     task.GroupId,
@@ -159,5 +159,9 @@ func CreateTask(ctx context.Context, task model.TaskDTO) {
 			"Lng":         task.Location.Lng,
 		},
 	}
-	database.Write(ctx, "Tasks", task.PrimaryKey, task.RowKey, taskMap)
+	err := database.Write(ctx, "Tasks", task.PrimaryKey, task.RowKey, taskMap)
+	if err != nil {
+		return model.TaskDTO{}, err
+	}
+	return task, nil
 }

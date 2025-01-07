@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"schedule-api/model"
 	"schedule-api/repository"
 	"strconv"
@@ -24,13 +25,32 @@ func GetAllTaskForDate(ctx context.Context, date string, groupId string) ([]byte
 }
 
 // get by id
-func GetTaskById(ctx context.Context, id string) model.TaskDTO {
-	return repository.GetTaskById(ctx, id)
+func GetTaskById(ctx context.Context, id string) (model.TaskDTO, error) {
+	task, err := repository.GetTaskById(ctx, id)
+
+	if err != nil {
+		return model.TaskDTO{}, err
+	}
+	return task, nil
 }
 
 // update a task
-func UpdateTask(c context.Context, task model.TaskDTO) bool {
-	return repository.UpdateTask(c, task)
+func UpdateTask(c context.Context, task model.TaskDTO) (model.Task, error) {
+	if repository.UpdateTask(c, task) {
+		DbTask, err := repository.GetTaskById(c, task.Id)
+		taskModel := model.Task{
+			Id:          DbTask.Id,
+			GroupId:     DbTask.GroupId,
+			Name:        DbTask.Name,
+			Description: DbTask.Description,
+			Date:        DbTask.Date,
+			StartTime:   DbTask.StartTime,
+			EndTime:     DbTask.EndTime,
+			Location:    DbTask.Location,
+		}
+		return taskModel, err
+	}
+	return model.Task{}, errors.New("failed to update task")
 }
 
 // delete a task
@@ -39,7 +59,7 @@ func DeleteTask(ctx context.Context, pk string, rk string) bool {
 }
 
 // create a task
-func CreateTask(ctx context.Context, task model.Task) model.TaskDTO {
+func CreateTask(ctx context.Context, task model.Task) (model.TaskDTO, error) {
 	id, err := uuid.NewRandom()
 	if err != nil {
 		panic(err)
@@ -47,7 +67,7 @@ func CreateTask(ctx context.Context, task model.Task) model.TaskDTO {
 
 	taskDTO := model.TaskDTO{
 		PrimaryKey:  task.Date + strconv.Itoa(task.GroupId),
-		RowKey:      task.StartTime + id.String(),
+		RowKey:      id.String(),
 		Id:          id.String(),
 		GroupId:     task.GroupId,
 		Name:        task.Name,
@@ -58,7 +78,7 @@ func CreateTask(ctx context.Context, task model.Task) model.TaskDTO {
 		Location:    task.Location,
 	}
 
-	repository.CreateTask(ctx, taskDTO)
+	response, err := repository.CreateTask(ctx, taskDTO)
 
-	return taskDTO
+	return response, err
 }
