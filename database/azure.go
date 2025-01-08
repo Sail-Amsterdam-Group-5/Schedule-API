@@ -98,21 +98,6 @@ func ReadFilter(ctx context.Context, tableName string, filter string) ([]aztable
 		return nil, err
 	}
 
-	// pager := client.ListEntities(nil)
-	// var entities []aztables.EDMEntity
-
-	// for pager.NextPage(ctx) {
-	// 	for _, entity := range pager.PageResponse().Entities {
-	// 		if entity.MatchesFilter(filter) {
-	// 			entities = append(entities, entity)
-	// 		}
-	// 	}
-	// }
-
-	// if err = pager.Err(); err != nil {
-	// 	return nil, fmt.Errorf("failed to query entities: %w", err)
-	// }
-
 	pager := client.NewListEntitiesPager(nil)
 	var entities []aztables.EDMEntity
 
@@ -141,20 +126,6 @@ func ReadAll(ctx context.Context, tableName string) ([]aztables.EDMEntity, error
 	if err != nil {
 		return nil, err
 	}
-
-	// pager := client.ListEntities(nil)
-	// var entities []aztables.EDMEntity
-
-	// for pager.NextPage(ctx) {
-	// 	for _, entity := range pager.PageResponse().Entities {
-	// 		entities = append(entities, entity)
-	// 	}
-	// }
-
-	// if err = pager.Err(); err != nil {
-	// 	return nil, fmt.Errorf("failed to query entities: %w", err)
-	// }
-	// return entities, nil
 
 	pager := client.NewListEntitiesPager(nil)
 	var entities []aztables.EDMEntity
@@ -199,12 +170,6 @@ func Update(ctx context.Context, tableName string, pk string, rk string, data ma
 	if err != nil {
 		return err
 	}
-
-	// entity := aztables.EDMEntity{
-	// 	PartitionKey: pk,
-	// 	RowKey:       rk,
-	// 	Properties:   data,
-	// }
 
 	entity := aztables.EDMEntity{
 		Properties: data,
