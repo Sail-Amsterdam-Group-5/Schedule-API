@@ -187,3 +187,49 @@ func CancelTask(c *gin.Context) {
 	// Here you would upload the cancel to the database.
 	c.JSON(http.StatusOK, checkin)
 }
+
+func CreateDummyData(c *gin.Context) {
+	// Create a dummy task
+	task := model.Task{
+		GroupId:     1,
+		Name:        "Dummy Task 1",
+		Description: "This is a dummy task",
+		Date:        "25-08-2025",
+		StartTime:   "12:00",
+		EndTime:     "14:00",
+		Location:    "1234654897",
+	}
+	task2 := model.Task{
+		GroupId:     1,
+		Name:        "Dummy Task 2",
+		Description: "This is a dummy task",
+		Date:        "25-08-2025",
+		StartTime:   "14:00",
+		EndTime:     "16:00",
+		Location:    "1234654897",
+	}
+	task3 := model.Task{
+		GroupId:     1,
+		Name:        "Dummy Task 3",
+		Description: "This is a dummy task",
+		Date:        "24-08-2025",
+		StartTime:   "12:00",
+		EndTime:     "19:00",
+		Location:    "1234654897",
+	}
+
+	response, err := service.CreateTask(c.Request.Context(), task)
+	response, err = service.CreateTask(c.Request.Context(), task2)
+	response, err = service.CreateTask(c.Request.Context(), task3)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// // Return the schedule
+	c.JSON(http.StatusOK, gin.H{
+		"Message": "Task created succesfully",
+		"task":    response,
+	})
+}

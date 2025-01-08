@@ -30,6 +30,7 @@ func main() {
 	// Schedule CRUD routes
 	schedule := router.Group("/schedule")
 	{
+		schedule.POST("/", middleware.CheckScope("admin"), controller.CreateDummyData)     // only for testing
 		schedule.GET("/:date", middleware.CheckScope("volunteer"), controller.GetSchedule) //
 
 		schedule.POST("/task", middleware.CheckScope("team-lead"), controller.CreateTask) //
