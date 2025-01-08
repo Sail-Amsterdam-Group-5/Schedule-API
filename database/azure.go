@@ -159,7 +159,7 @@ func Delete(ctx context.Context, tableName string, pk string, rk string) error {
 
 	_, err = client.DeleteEntity(ctx, pk, rk, nil)
 	if err != nil {
-		return fmt.Errorf("failed to delete entity: %w", err)
+		return errors.New("failed to delete entity: " + err.Error())
 	}
 	return nil
 }

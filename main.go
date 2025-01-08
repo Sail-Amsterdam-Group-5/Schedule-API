@@ -30,7 +30,7 @@ func main() {
 	// Schedule CRUD routes
 	schedule := router.Group("/schedule")
 	{
-		schedule.GET("/:date", middleware.CheckScope("volunteer"), controller.GetSchedule) // works but date does not work
+		schedule.GET("/:date", middleware.CheckScope("volunteer"), controller.GetSchedule) //
 
 		schedule.POST("/task", middleware.CheckScope("team-lead"), controller.CreateTask) //
 

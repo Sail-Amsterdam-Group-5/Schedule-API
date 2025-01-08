@@ -17,9 +17,9 @@ import (
 // @Router /schedule/{date} [get]
 func GetSchedule(c *gin.Context) {
 	date := c.Param("date")
-	id := "1" // TODO: need to get groupID exually
+	groupId := "1" // TODO: need to get groupID exually
 	// Get the schedule
-	schedule, err := service.GetAllTaskForDate(c.Request.Context(), date, id)
+	schedule, err := service.GetAllTaskForDate(c.Request.Context(), date, groupId)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

@@ -43,6 +43,9 @@ func GetAllTaskForDate(ctx context.Context, date string, groupId string) ([]mode
 
 	var tasks []model.TaskDTO
 	for _, entity := range entities {
+		if entity.Properties["Date"].(string) != date {
+			continue
+		}
 		gid := entity.Properties["GroupId"].(int32)
 		task := model.TaskDTO{
 			PrimaryKey:  entity.PartitionKey,
