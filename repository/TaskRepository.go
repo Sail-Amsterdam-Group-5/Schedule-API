@@ -73,6 +73,9 @@ func GetTaskById(ctx context.Context, id string) (model.TaskDTO, error) {
 	}
 
 	if len(task) > 0 {
+		if task[0].Properties["Id"].(string) != id {
+			return model.TaskDTO{}, errors.New("task not found")
+		}
 		gid := task[0].Properties["GroupId"].(int32)
 		taskDTO := model.TaskDTO{
 			PrimaryKey:  task[0].PartitionKey,

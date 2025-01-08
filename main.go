@@ -34,7 +34,7 @@ func main() {
 
 		schedule.POST("/task", middleware.CheckScope("team-lead"), controller.CreateTask) //
 
-		schedule.GET("/task/:id", middleware.CheckScope("volunteer"), controller.GetTask)       // returns next one in line if id is not found
+		schedule.GET("/task/:id", middleware.CheckScope("volunteer"), controller.GetTask)       //
 		schedule.PUT("/task/:id", middleware.CheckScope("team-lead"), controller.UpdateTask)    //
 		schedule.DELETE("/task/:id", middleware.CheckScope("team-lead"), controller.DeleteTask) //
 
