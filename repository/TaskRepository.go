@@ -1,72 +1,131 @@
 package repository
 
 import (
+	"context"
+	"errors"
 	"schedule-api/database"
 	"schedule-api/model"
 )
 
 // get all for user
-func GetAllTaskForUser(groupId string) []model.TaskDTO {
+func GetAllTaskForUser(ctx context.Context, groupId string) []model.TaskDTO {
+	filter := database.BuildFilter("GroupId", groupId)
 
-	// return []model.TaskDTO{
-	// 	{
-	// 		Id:          1,
-	// 		GroupId:     1,
-	// 		Name:        "Task 1",
-	// 		Description: "Description 1",
-	// 		Date:        "2019-01-01",
-	// 		StartTime:   "09:00",
-	// 		EndTime:     "10:00",
-	// 		Location: model.LocationDTO{
-	// 			Id:          1,
-	// 			Name:        "Location 1",
-	// 			Description: "Description 1",
-	// 			Address:     "Address 1",
-	// 			Lat:         1.0,
-	// 			Lng:         1.0,
-	// 		},
-	// 	},
-	// }
+	entities, err := database.ReadFilter(ctx, "Tasks", filter)
+	if err != nil {
+		return nil
+	}
 
-	return database.ReadFilter("Tasks", "GroupId", groupId)
+	var tasks []model.TaskDTO
+	for _, entity := range entities {
+		task := model.TaskDTO{
+			Id:          entity.Properties["Id"].(string),
+			GroupId:     entity.Properties["GroupId"].(int),
+			Name:        entity.Properties["Name"].(string),
+			Description: entity.Properties["Description"].(string),
+			Date:        entity.Properties["Date"].(string),
+			StartTime:   entity.Properties["StartTime"].(string),
+			EndTime:     entity.Properties["EndTime"].(string),
+			Location:    entity.Properties["Location"].(string),
+		}
+		tasks = append(tasks, task)
+	}
+	return tasks
 }
 
 // get all for date
+func GetAllTaskForDate(ctx context.Context, date string, groupId string) ([]model.TaskDTO, error) {
+	filter := database.BuildDuoFilter("Date", date, "GroupId", groupId)
+	entities, err := database.ReadFilter(ctx, "Tasks", filter)
+	if err != nil {
+		return nil, err
+	}
 
-func GetAllTaskForDate(date string, groupId string) []model.TaskDTO {
-
-	tasks := database.ReadDuoFilter("Tasks", "Date", date, "GroupId", groupId)
-
-	return tasks
-
+	var tasks []model.TaskDTO
+	for _, entity := range entities {
+		gid := entity.Properties["GroupId"].(int32)
+		task := model.TaskDTO{
+			PrimaryKey:  entity.PartitionKey,
+			RowKey:      entity.RowKey,
+			Id:          entity.Properties["Id"].(string),
+			GroupId:     int(gid),
+			Name:        entity.Properties["Name"].(string),
+			Description: entity.Properties["Description"].(string),
+			Date:        entity.Properties["Date"].(string),
+			StartTime:   entity.Properties["StartTime"].(string),
+			EndTime:     entity.Properties["EndTime"].(string),
+			Location:    entity.Properties["Location"].(string),
+		}
+		tasks = append(tasks, task)
+	}
+	return tasks, nil
 }
 
 // get by id
+func GetTaskById(ctx context.Context, id string) (model.TaskDTO, error) {
+	filter := database.BuildFilter("Id", id)
+	task, err := database.ReadFilter(ctx, "Tasks", filter)
+	if err != nil {
+		return model.TaskDTO{}, err
+	}
 
-func GetTaskById(id string) model.TaskDTO {
-
-	task := database.ReadSingle("Tasks", "Id", id)
-
-	return task
-
+	if len(task) > 0 {
+		gid := task[0].Properties["GroupId"].(int32)
+		taskDTO := model.TaskDTO{
+			PrimaryKey:  task[0].PartitionKey,
+			RowKey:      task[0].RowKey,
+			Id:          task[0].Properties["Id"].(string),
+			GroupId:     int(gid),
+			Name:        task[0].Properties["Name"].(string),
+			Description: task[0].Properties["Description"].(string),
+			Date:        task[0].Properties["Date"].(string),
+			StartTime:   task[0].Properties["StartTime"].(string),
+			EndTime:     task[0].Properties["EndTime"].(string),
+			Location:    task[0].Properties["Location"].(string),
+		}
+		return taskDTO, nil
+	}
+	return model.TaskDTO{}, errors.New("task not found")
 }
 
 // update a task
-
-func UpdateTask(task model.TaskDTO) bool {
-	database.Update("Tasks", task.PrimaryKey, task.RowKey, task)
+func UpdateTask(c context.Context, task model.TaskDTO) bool {
+	taskMap := map[string]interface{}{
+		"Id":          task.Id,
+		"GroupId":     task.GroupId,
+		"Name":        task.Name,
+		"Description": task.Description,
+		"Date":        task.Date,
+		"StartTime":   task.StartTime,
+		"EndTime":     task.EndTime,
+		"Location":    task.Location,
+	}
+	database.Update(c, "Tasks", task.PrimaryKey, task.RowKey, taskMap)
 	return true
 }
 
 // delete a task
-
-func DeleteTask(pk string, rk string) bool {
-	database.Delete("Tasks", pk, rk)
+func DeleteTask(ctx context.Context, pk string, rk string) bool {
+	database.Delete(ctx, "Tasks", pk, rk)
 	return true
 }
 
 // create a task
+func CreateTask(ctx context.Context, task model.TaskDTO) (model.TaskDTO, error) {
+	taskMap := map[string]interface{}{
+		"Id":          task.Id,
+		"GroupId":     task.GroupId,
+		"Name":        task.Name,
+		"Description": task.Description,
+		"Date":        task.Date,
+		"StartTime":   task.StartTime,
+		"EndTime":     task.EndTime,
+		"Location":    task.Location,
+	}
 
-func CreateTask(task model.TaskDTO) {
-	database.Create("Tasks", task)
+	err := database.Write(ctx, "Tasks", task.PrimaryKey, task.RowKey, taskMap)
+	if err != nil {
+		return model.TaskDTO{}, err
+	}
+	return task, nil
 }

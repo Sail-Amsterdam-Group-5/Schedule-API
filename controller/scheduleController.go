@@ -3,6 +3,7 @@ package controller
 import (
 	"net/http"
 
+	"schedule-api/model"
 	"schedule-api/service"
 
 	"github.com/gin-gonic/gin"
@@ -16,9 +17,9 @@ import (
 // @Router /schedule/{date} [get]
 func GetSchedule(c *gin.Context) {
 	date := c.Param("date")
-	id := c.Request.BasicAuth("id") // TODO: need to get groupID exually
+	id := "1" // TODO: need to get groupID exually
 	// Get the schedule
-	schedule, err := service.GetAllTaskForDate(date, id)
+	schedule, err := service.GetAllTaskForDate(c.Request.Context(), date, id)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -38,9 +39,9 @@ func GetSchedule(c *gin.Context) {
 // @Router /schedule/{date}/{groupid} [get]
 func GetTasks(c *gin.Context) {
 	date := c.Param("date")
-	id := c.Request.BasicAuth("id") // TODO: need to get groupID exually
+	id := "1" // TODO: need to get groupID exually
 	// Get the schedule
-	schedule, err := service.GetAllTaskForDate(date, id)
+	schedule, err := service.GetAllTaskForDate(c.Request.Context(), date, id)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -58,9 +59,13 @@ func GetTasks(c *gin.Context) {
 // @Success 200 {object} model.TaskDTO
 // @Router /schedule/task/{id} [get]
 func GetTask(c *gin.Context) {
-	taskid := c.Param("ID")
+	taskid := c.Param("id")
 
-	task := service.GetTaskById(taskid)
+	task, err := service.GetTaskById(c.Request.Context(), taskid)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	// // Return the schedule
 	c.JSON(http.StatusOK, task)
@@ -71,17 +76,28 @@ func GetTask(c *gin.Context) {
 // @Description Create a new task
 // @Param task body model.Task true "Task"
 // @Success 200 {object} model.TaskDTO
+// @Failure 500 {object} string
 // @Router /schedule/task [post]
 func CreateTask(c *gin.Context) {
-	schedule := service.CreateTask(c.Request.Body.Read()) // TODO: need more research on this
+	var task model.Task
+	// Bind JSON too the model
+	if err := c.ShouldBindJSON(&task); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-	// if err != nil {
-	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-	// 	return
-	// }
+	response, err := service.CreateTask(c.Request.Context(), task)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	// // Return the schedule
-	c.JSON(http.StatusOK, schedule)
+	c.JSON(http.StatusOK, gin.H{
+		"Message": "Task created succesfully",
+		"task":    response,
+	})
 }
 
 // UpdateTask creates a Task.
@@ -92,10 +108,18 @@ func CreateTask(c *gin.Context) {
 // @Success 200 {object} model.TaskDTO
 // @Router /schedule/task/{id} [put]
 func UpdateTask(c *gin.Context) {
+	var task model.TaskDTO
+	if err := c.ShouldBindJSON(&task); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-	id := c.Param("id")
-	toUpdate := c.Request.Body.Read() // TODO: need more research on this
-	update := service.UpdateTask(toUpdate)
+	update, err := service.UpdateTask(c.Request.Context(), task)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	c.JSON(http.StatusOK, update)
 }
@@ -108,10 +132,16 @@ func UpdateTask(c *gin.Context) {
 // @Router /schedule/task/{id} [delete]
 func DeleteTask(c *gin.Context) {
 	id := c.Param("ID")
-	task := service.GetTaskById(id)
-	delete := service.DeleteTask(task.PrimaryKey, task.RowKey)
+	task, err := service.GetTaskById(c.Request.Context(), id)
 
-	if delete == false {
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	delete := service.DeleteTask(c.Request.Context(), task.PrimaryKey, task.RowKey)
+
+	if !delete {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete task"})
 	}
 	// Here you would delete the task from the database using the id.
@@ -123,12 +153,16 @@ func DeleteTask(c *gin.Context) {
 // @Description CheckIn on a task
 // @Param id path string true "ID"
 // @Success 200 {object} model.CheckInDTO
-// @Router /schedule/task/{id} [post]
+// @Router /schedule/task/{id}/checkin [post]
 func CheckIn(c *gin.Context) {
 	taskId := c.Param("id")
-	userId := c.Request.BasicAuth("id")
+	userId := "1" // TODO: need to get userID exually
 
-	checkin := service.Checkin(userId, taskId)
+	checkin, err := service.Checkin(c.Request.Context(), userId, taskId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	// Here you would upload the checkin to the database.
 	c.JSON(http.StatusOK, checkin)
@@ -142,9 +176,13 @@ func CheckIn(c *gin.Context) {
 // @Router /schedule/task/{id} [patch]
 func CancelTask(c *gin.Context) {
 	taskId := c.Param("id")
-	userId := c.Request.BasicAuth("id")
+	userId := "1" // TODO: need to get userID exually
 
-	checkin := service.CancelTask(userId, taskId)
+	checkin, err := service.CancelTask(c.Request.Context(), userId, taskId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	// Here you would upload the cancel to the database.
 	c.JSON(http.StatusOK, checkin)

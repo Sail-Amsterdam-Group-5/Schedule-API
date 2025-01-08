@@ -3,21 +3,35 @@ package database
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"os"
+	"time"
 
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/Azure/azure-sdk-for-go/sdk/data/aztables"
 )
 
 // Connection creates a new Azure Table client for the given table name.
 func Connection(tableName string) (*aztables.Client, error) {
-	connectionString := "UseDevelopmentStorage=true"
+	connectionString := "DefaultEndpointsProtocol=https;AccountName=" + os.Getenv("AZURE_AccountName") + ";AccountKey=" + os.Getenv("AZURE_AccountKey") + ";TableEndpoint=" + os.Getenv("AZURE_TableEndpoint") + ";"
 	if connectionString == "" {
 		return nil, fmt.Errorf("AZURE_STORAGE_CONNECTION_STRING is not set")
 	}
-
 	serviceClient, err := aztables.NewServiceClientFromConnectionString(connectionString, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create service client: %w", err)
+	}
+
+	// Check if the table exists, if not create it
+	_, err = serviceClient.CreateTable(context.Background(), tableName, nil)
+	if err != nil {
+		var responseError *azcore.ResponseError
+		if errors.As(err, &responseError) && responseError.ErrorCode == "TableAlreadyExists" {
+			// Table already exists, ignore the error
+		} else {
+			return nil, fmt.Errorf("failed to create table: %w", err)
+		}
 	}
 
 	client := serviceClient.NewClient(tableName)
@@ -31,17 +45,27 @@ func Write(ctx context.Context, tableName string, pk string, rk string, data map
 		return err
 	}
 
-	entity := aztables.EDMEntity{
+	entity := aztables.Entity{
+		PartitionKey: pk,
+		RowKey:       rk,
+		Timestamp:    aztables.EDMDateTime(time.Now()),
+	}
+
+	EDMEntity := aztables.EDMEntity{
+		Entity:     entity,
 		Properties: data,
-		Entity:     aztables.Entity{PartitionKey: pk, RowKey: rk},
 	}
 
-	json, err := json.Marshal(entity)
-
-	_, err = client.AddEntity(ctx, json, nil)
+	jsonEntity, err := json.Marshal(EDMEntity)
 	if err != nil {
-		return fmt.Errorf("failed to add entity: %w", err)
+		return err
 	}
+
+	_, err = client.AddEntity(ctx, jsonEntity, nil)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -52,11 +76,19 @@ func ReadSingle(ctx context.Context, tableName string, pk string, rk string) (*a
 		return nil, err
 	}
 
-	entity, err := client.GetEntity(ctx, pk, rk, nil)
+	resp, err := client.GetEntity(ctx, pk, rk, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read entity: %w", err)
 	}
-	return entity, nil
+
+	//convert from entity to EDMEntity
+	var entity aztables.EDMEntity
+	err = json.Unmarshal(resp.Value, &entity)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse entity: %w", err)
+	}
+
+	return &entity, nil
 }
 
 // ReadFilter fetches entities based on a single filter condition.
@@ -66,20 +98,41 @@ func ReadFilter(ctx context.Context, tableName string, filter string) ([]aztable
 		return nil, err
 	}
 
-	pager := client.ListEntities(nil)
+	// pager := client.ListEntities(nil)
+	// var entities []aztables.EDMEntity
+
+	// for pager.NextPage(ctx) {
+	// 	for _, entity := range pager.PageResponse().Entities {
+	// 		if entity.MatchesFilter(filter) {
+	// 			entities = append(entities, entity)
+	// 		}
+	// 	}
+	// }
+
+	// if err = pager.Err(); err != nil {
+	// 	return nil, fmt.Errorf("failed to query entities: %w", err)
+	// }
+
+	pager := client.NewListEntitiesPager(nil)
 	var entities []aztables.EDMEntity
 
-	for pager.NextPage(ctx) {
-		for _, entity := range pager.PageResponse().Entities {
-			if entity.MatchesFilter(filter) {
-				entities = append(entities, entity)
+	for pager.More() {
+		resp, err := pager.NextPage(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("failed to query entities: %w", err)
+		}
+
+		for _, entity := range resp.Entities {
+			var edmEntity aztables.EDMEntity
+			err = json.Unmarshal(entity, &edmEntity)
+			if err != nil {
+				return nil, fmt.Errorf("failed to parse entity: %w", err)
 			}
+
+			entities = append(entities, edmEntity)
 		}
 	}
 
-	if err = pager.Err(); err != nil {
-		return nil, fmt.Errorf("failed to query entities: %w", err)
-	}
 	return entities, nil
 }
 
@@ -89,18 +142,40 @@ func ReadAll(ctx context.Context, tableName string) ([]aztables.EDMEntity, error
 		return nil, err
 	}
 
-	pager := client.ListEntities(nil)
+	// pager := client.ListEntities(nil)
+	// var entities []aztables.EDMEntity
+
+	// for pager.NextPage(ctx) {
+	// 	for _, entity := range pager.PageResponse().Entities {
+	// 		entities = append(entities, entity)
+	// 	}
+	// }
+
+	// if err = pager.Err(); err != nil {
+	// 	return nil, fmt.Errorf("failed to query entities: %w", err)
+	// }
+	// return entities, nil
+
+	pager := client.NewListEntitiesPager(nil)
 	var entities []aztables.EDMEntity
 
-	for pager.NextPage(ctx) {
-		for _, entity := range pager.PageResponse().Entities {
-			entities = append(entities, entity)
+	for pager.More() {
+		resp, err := pager.NextPage(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("failed to query entities: %w", err)
+		}
+
+		for _, entity := range resp.Entities {
+			var edmEntity aztables.EDMEntity
+			err = json.Unmarshal(entity, &edmEntity)
+			if err != nil {
+				return nil, fmt.Errorf("failed to parse entity: %w", err)
+			}
+
+			entities = append(entities, edmEntity)
 		}
 	}
 
-	if err = pager.Err(); err != nil {
-		return nil, fmt.Errorf("failed to query entities: %w", err)
-	}
 	return entities, nil
 }
 
@@ -136,9 +211,12 @@ func Update(ctx context.Context, tableName string, pk string, rk string, data ma
 		Entity:     aztables.Entity{PartitionKey: pk, RowKey: rk},
 	}
 
-	json, err := json.Marshal(entity)
+	jsonEntity, err := json.Marshal(entity)
+	if err != nil {
+		return fmt.Errorf("failed to marshal entity: %w", err)
+	}
 
-	_, err = client.UpdateEntity(ctx, json, nil)
+	_, err = client.UpdateEntity(ctx, jsonEntity, nil)
 	if err != nil {
 		return fmt.Errorf("failed to update entity: %w", err)
 	}
@@ -148,4 +226,9 @@ func Update(ctx context.Context, tableName string, pk string, rk string, data ma
 // Helper function to construct filter strings for Azure Tables.
 func BuildFilter(field, value string) string {
 	return fmt.Sprintf("%s eq '%s'", field, value)
+}
+
+// Helper function to construct filter strings for Azure Tables.
+func BuildDuoFilter(field, value, field2, value2 string) string {
+	return fmt.Sprintf("%s eq '%s' and %s eq '%s'", field, value, field2, value2)
 }
