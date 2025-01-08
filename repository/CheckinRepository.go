@@ -9,7 +9,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/data/aztables"
 )
 
-func SaveCheckIn(ctx context.Context, dto model.CheckInDTO) {
+func SaveCheckIn(ctx context.Context, dto model.CheckInDTO) error {
 	pk := dto.PrimaryKey
 	rk := dto.RowKey
 
@@ -22,7 +22,7 @@ func SaveCheckIn(ctx context.Context, dto model.CheckInDTO) {
 		"CancelledTask": dto.CancelledTask,
 	}
 
-	database.Write(ctx, "CheckIn", pk, rk, checkinMap)
+	return database.Write(ctx, "CheckIn", pk, rk, checkinMap)
 }
 
 func GetCheckin(ctx context.Context, pk string, rk string) (model.CheckInDTO, error) {

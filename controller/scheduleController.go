@@ -153,12 +153,16 @@ func DeleteTask(c *gin.Context) {
 // @Description CheckIn on a task
 // @Param id path string true "ID"
 // @Success 200 {object} model.CheckInDTO
-// @Router /schedule/task/{id} [post]
+// @Router /schedule/task/{id}/checkin [post]
 func CheckIn(c *gin.Context) {
 	taskId := c.Param("id")
-	userId := "1"
+	userId := "1" // TODO: need to get userID exually
 
-	checkin := service.Checkin(c.Request.Context(), userId, taskId)
+	checkin, err := service.Checkin(c.Request.Context(), userId, taskId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	// Here you would upload the checkin to the database.
 	c.JSON(http.StatusOK, checkin)
@@ -172,9 +176,13 @@ func CheckIn(c *gin.Context) {
 // @Router /schedule/task/{id} [patch]
 func CancelTask(c *gin.Context) {
 	taskId := c.Param("id")
-	userId := "1"
+	userId := "1" // TODO: need to get userID exually
 
-	checkin := service.CancelTask(c.Request.Context(), userId, taskId)
+	checkin, err := service.CancelTask(c.Request.Context(), userId, taskId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	// Here you would upload the cancel to the database.
 	c.JSON(http.StatusOK, checkin)

@@ -19,9 +19,16 @@ func GetAllTaskForUser(ctx context.Context, userId string) ([]byte, error) {
 }
 
 // get all for date
-func GetAllTaskForDate(ctx context.Context, date string, groupId string) ([]byte, error) {
-	tasks := repository.GetAllTaskForDate(ctx, date, groupId)
-	return json.Marshal(tasks)
+func GetAllTaskForDate(ctx context.Context, date string, groupId string) ([]model.TaskDTO, error) {
+	tasks, err := repository.GetAllTaskForDate(ctx, date, groupId)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(tasks) == 0 {
+		return nil, errors.New("no tasks found")
+	}
+	return tasks, nil
 }
 
 // get by id
