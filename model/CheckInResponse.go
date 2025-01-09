@@ -7,4 +7,5 @@ type CheckInResponse struct {
 	CheckedIn     bool   `json:"checkedIn"`
 	CheckInTime   string `json:"checkinTime"`
 	CancelledTask bool   `json:"cancelledTask"`
+	Reason        string `json:"reason"`
 }

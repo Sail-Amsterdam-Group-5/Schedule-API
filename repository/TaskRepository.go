@@ -33,6 +33,34 @@ func GetAllTaskForUser(ctx context.Context, groupId string) []model.TaskDTO {
 	return tasks
 }
 
+// get all for group
+func GetAllTaskForGroup(ctx context.Context, groupId string) ([]model.TaskDTO, error) {
+	filter := database.BuildFilter("GroupId", groupId)
+	entities, err := database.ReadFilter(ctx, "Tasks", filter)
+	if err != nil {
+		return nil, err
+	}
+
+	var tasks []model.TaskDTO
+	for _, entity := range entities {
+		if entity.Properties["GroupId"].(string) != groupId {
+			continue
+		}
+		task := model.TaskDTO{
+			Id:          entity.Properties["Id"].(string),
+			GroupId:     entity.Properties["GroupId"].(int),
+			Name:        entity.Properties["Name"].(string),
+			Description: entity.Properties["Description"].(string),
+			Date:        entity.Properties["Date"].(string),
+			StartTime:   entity.Properties["StartTime"].(string),
+			EndTime:     entity.Properties["EndTime"].(string),
+			Location:    entity.Properties["Location"].(string),
+		}
+		tasks = append(tasks, task)
+	}
+	return tasks, nil
+}
+
 // get all for date
 func GetAllTaskForDate(ctx context.Context, date string, groupId string) ([]model.TaskDTO, error) {
 	filter := database.BuildDuoFilter("Date", date, "GroupId", groupId)

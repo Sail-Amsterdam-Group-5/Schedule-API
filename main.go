@@ -31,7 +31,9 @@ func main() {
 	// Schedule CRUD routes
 	schedule := router.Group("/schedule")
 	{
+		// object voor location in de task als response
 		schedule.POST("/", middleware.CheckScope("admin"), controller.CreateDummyData)     // only for testing
+		schedule.GET("/", middleware.CheckScope("volunteer"), controller.GetAllTasks)      //
 		schedule.GET("/:date", middleware.CheckScope("volunteer"), controller.GetSchedule) //
 
 		schedule.POST("/task", middleware.CheckScope("team-lead"), controller.CreateTask) //

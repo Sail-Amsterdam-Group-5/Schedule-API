@@ -193,7 +193,7 @@ func CreateDummyData(c *gin.Context) {
 	task := model.Task{
 		GroupId:     1,
 		Name:        "Dummy Task 1",
-		Description: "This is a dummy task",
+		Description: "Task 1: This is a dummy task \n 2: This is a dummy task",
 		Date:        "25-08-2025",
 		StartTime:   "12:00",
 		EndTime:     "14:00",
@@ -232,4 +232,18 @@ func CreateDummyData(c *gin.Context) {
 		"Message": "Task created succesfully",
 		"task":    response,
 	})
+}
+
+func GetAllTasks(c *gin.Context) {
+	groupId := "1" // TODO: need to get groupID exually
+	// Get the schedule
+	schedule, err := service.GetAllTaskForGroup(c.Request.Context(), groupId)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Return the schedule
+	c.JSON(http.StatusOK, schedule)
 }
