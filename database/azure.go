@@ -93,31 +93,34 @@ func ReadSingle(ctx context.Context, tableName string, pk string, rk string) (*a
 
 // ReadFilter fetches entities based on a single filter condition.
 func ReadFilter(ctx context.Context, tableName string, filter string) ([]aztables.EDMEntity, error) {
+	// Establish connection to the table
 	client, err := Connection(tableName)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("connection error: %w", err)
 	}
 
+	// Setup query options
 	queryOptions := &aztables.ListEntitiesOptions{
 		Filter: &filter,
 	}
 
+	// Initialize pager
 	pager := client.NewListEntitiesPager(queryOptions)
 	var entities []aztables.EDMEntity
 
+	// Iterate through pages
 	for pager.More() {
 		resp, err := pager.NextPage(ctx)
 		if err != nil {
 			return nil, fmt.Errorf("failed to query entities: %w", err)
 		}
 
+		// Parse entities in the response
 		for _, entity := range resp.Entities {
 			var edmEntity aztables.EDMEntity
-			err = json.Unmarshal(entity, &edmEntity)
-			if err != nil {
+			if err := json.Unmarshal(entity, &edmEntity); err != nil {
 				return nil, fmt.Errorf("failed to parse entity: %w", err)
 			}
-
 			entities = append(entities, edmEntity)
 		}
 	}

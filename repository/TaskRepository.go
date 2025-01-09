@@ -5,7 +5,6 @@ import (
 	"errors"
 	"schedule-api/database"
 	"schedule-api/model"
-	"strconv"
 )
 
 // get all for user
@@ -21,7 +20,7 @@ func GetAllTaskForUser(ctx context.Context, groupId string) []model.TaskDTO {
 	for _, entity := range entities {
 		task := model.TaskDTO{
 			Id:          entity.Properties["Id"].(string),
-			GroupId:     entity.Properties["GroupId"].(int),
+			GroupId:     entity.Properties["GroupId"].(string),
 			Name:        entity.Properties["Name"].(string),
 			Description: entity.Properties["Description"].(string),
 			Date:        entity.Properties["Date"].(string),
@@ -44,12 +43,9 @@ func GetAllTaskForGroup(ctx context.Context, groupId string) ([]model.TaskDTO, e
 
 	var tasks []model.TaskDTO
 	for _, entity := range entities {
-		if entity.Properties["GroupId"].(string) != groupId {
-			continue
-		}
 		task := model.TaskDTO{
 			Id:          entity.Properties["Id"].(string),
-			GroupId:     entity.Properties["GroupId"].(int),
+			GroupId:     entity.Properties["GroupId"].(string),
 			Name:        entity.Properties["Name"].(string),
 			Description: entity.Properties["Description"].(string),
 			Date:        entity.Properties["Date"].(string),
@@ -64,35 +60,19 @@ func GetAllTaskForGroup(ctx context.Context, groupId string) ([]model.TaskDTO, e
 
 // get all for date
 func GetAllTaskForDate(ctx context.Context, date string, groupId string) ([]model.TaskDTO, error) {
-	//filter := database.BuildDuoFilter("Date", date, "GroupId", groupId)
-	//entities, err := database.ReadFilter(ctx, "Tasks", filter)
-	entities, err := database.ReadAll(ctx, "Tasks")
-	// fmt.Println(filter)
-	// fmt.Println(err)
-	// fmt.Println(entities)
-
+	filter := database.BuildDuoFilter("Date", date, "GroupId", groupId)
+	entities, err := database.ReadFilter(ctx, "Tasks", filter)
 	if err != nil {
 		return nil, err
 	}
 
 	var tasks []model.TaskDTO
 	for _, entity := range entities {
-		if entity.Properties["Date"].(string) != date {
-			continue
-		}
-		gid := entity.Properties["GroupId"].(int32)
-		groupIdInt, err := strconv.Atoi(groupId)
-		if err != nil {
-			return nil, err
-		}
-		if int(gid) != groupIdInt {
-			continue
-		}
 		task := model.TaskDTO{
 			PrimaryKey:  entity.PartitionKey,
 			RowKey:      entity.RowKey,
 			Id:          entity.Properties["Id"].(string),
-			GroupId:     int(gid),
+			GroupId:     entity.Properties["GroupId"].(string),
 			Name:        entity.Properties["Name"].(string),
 			Description: entity.Properties["Description"].(string),
 			Date:        entity.Properties["Date"].(string),
@@ -114,15 +94,11 @@ func GetTaskById(ctx context.Context, id string) (model.TaskDTO, error) {
 	}
 
 	if len(task) > 0 {
-		if task[0].Properties["Id"].(string) != id {
-			return model.TaskDTO{}, errors.New("task not found")
-		}
-		gid := task[0].Properties["GroupId"].(int32)
 		taskDTO := model.TaskDTO{
 			PrimaryKey:  task[0].PartitionKey,
 			RowKey:      task[0].RowKey,
 			Id:          task[0].Properties["Id"].(string),
-			GroupId:     int(gid),
+			GroupId:     task[0].Properties["GroupId"].(string),
 			Name:        task[0].Properties["Name"].(string),
 			Description: task[0].Properties["Description"].(string),
 			Date:        task[0].Properties["Date"].(string),

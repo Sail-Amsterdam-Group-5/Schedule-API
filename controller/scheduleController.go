@@ -191,7 +191,7 @@ func CancelTask(c *gin.Context) {
 func CreateDummyData(c *gin.Context) {
 	// Create a dummy task
 	task := model.Task{
-		GroupId:     1,
+		GroupId:     "1",
 		Name:        "Dummy Task 1",
 		Description: "Task 1: This is a dummy task \n 2: This is a dummy task",
 		Date:        "25-08-2025",
@@ -200,7 +200,7 @@ func CreateDummyData(c *gin.Context) {
 		Location:    "1234654897",
 	}
 	task2 := model.Task{
-		GroupId:     1,
+		GroupId:     "1",
 		Name:        "Dummy Task 2",
 		Description: "This is a dummy task",
 		Date:        "25-08-2025",
@@ -209,7 +209,7 @@ func CreateDummyData(c *gin.Context) {
 		Location:    "1234654897",
 	}
 	task3 := model.Task{
-		GroupId:     1,
+		GroupId:     "1",
 		Name:        "Dummy Task 3",
 		Description: "This is a dummy task",
 		Date:        "24-08-2025",

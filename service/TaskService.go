@@ -6,7 +6,6 @@ import (
 	"errors"
 	"schedule-api/model"
 	"schedule-api/repository"
-	"strconv"
 
 	"github.com/google/uuid"
 )
@@ -86,7 +85,7 @@ func CreateTask(ctx context.Context, task model.Task) (model.TaskDTO, error) {
 	}
 
 	taskDTO := model.TaskDTO{
-		PrimaryKey:  task.Date + strconv.Itoa(task.GroupId),
+		PrimaryKey:  task.Date + task.GroupId,
 		RowKey:      id.String(),
 		Id:          id.String(),
 		GroupId:     task.GroupId,

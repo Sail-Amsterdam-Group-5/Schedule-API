@@ -2,7 +2,7 @@ package model
 
 type Task struct {
 	Id          string `json:"id"`
-	GroupId     int    `json:"groupId"`
+	GroupId     string `json:"groupId"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Date        string `json:"date"`
