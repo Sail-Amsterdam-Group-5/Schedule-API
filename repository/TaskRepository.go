@@ -5,6 +5,7 @@ import (
 	"errors"
 	"schedule-api/database"
 	"schedule-api/model"
+	"strconv"
 )
 
 // get all for user
@@ -63,8 +64,13 @@ func GetAllTaskForGroup(ctx context.Context, groupId string) ([]model.TaskDTO, e
 
 // get all for date
 func GetAllTaskForDate(ctx context.Context, date string, groupId string) ([]model.TaskDTO, error) {
-	filter := database.BuildDuoFilter("Date", date, "GroupId", groupId)
-	entities, err := database.ReadFilter(ctx, "Tasks", filter)
+	//filter := database.BuildDuoFilter("Date", date, "GroupId", groupId)
+	//entities, err := database.ReadFilter(ctx, "Tasks", filter)
+	entities, err := database.ReadAll(ctx, "Tasks")
+	// fmt.Println(filter)
+	// fmt.Println(err)
+	// fmt.Println(entities)
+
 	if err != nil {
 		return nil, err
 	}
@@ -75,6 +81,13 @@ func GetAllTaskForDate(ctx context.Context, date string, groupId string) ([]mode
 			continue
 		}
 		gid := entity.Properties["GroupId"].(int32)
+		groupIdInt, err := strconv.Atoi(groupId)
+		if err != nil {
+			return nil, err
+		}
+		if int(gid) != groupIdInt {
+			continue
+		}
 		task := model.TaskDTO{
 			PrimaryKey:  entity.PartitionKey,
 			RowKey:      entity.RowKey,

@@ -17,7 +17,7 @@ import (
 // @Router /schedule/{date} [get]
 func GetSchedule(c *gin.Context) {
 	date := c.Param("date")
-	groupId := "1" // TODO: need to get groupID exually
+	groupId := c.Request.Header.Get("X-User-GroupId")
 	// Get the schedule
 	schedule, err := service.GetAllTaskForDate(c.Request.Context(), date, groupId)
 
@@ -39,7 +39,7 @@ func GetSchedule(c *gin.Context) {
 // @Router /schedule/{date}/{groupid} [get]
 func GetTasks(c *gin.Context) {
 	date := c.Param("date")
-	id := "1" // TODO: need to get groupID exually
+	id := c.Request.Header.Get("X-User-GroupId")
 	// Get the schedule
 	schedule, err := service.GetAllTaskForDate(c.Request.Context(), date, id)
 
@@ -156,7 +156,7 @@ func DeleteTask(c *gin.Context) {
 // @Router /schedule/task/{id}/checkin [post]
 func CheckIn(c *gin.Context) {
 	taskId := c.Param("id")
-	userId := "1" // TODO: need to get userID exually
+	userId := c.Request.Header.Get("X-User-Id")
 
 	checkin, err := service.Checkin(c.Request.Context(), userId, taskId)
 	if err != nil {
@@ -176,7 +176,7 @@ func CheckIn(c *gin.Context) {
 // @Router /schedule/task/{id} [patch]
 func CancelTask(c *gin.Context) {
 	taskId := c.Param("id")
-	userId := "1" // TODO: need to get userID exually
+	userId := c.Request.Header.Get("X-User-Id")
 
 	checkin, err := service.CancelTask(c.Request.Context(), userId, taskId)
 	if err != nil {
@@ -234,8 +234,13 @@ func CreateDummyData(c *gin.Context) {
 	})
 }
 
+// GetSchedule retreves the schedule for a specific date.
+// @Summary Get schedule by date
+// @Description Get a schedule by groupId
+// @Success 200 {object} model.TaskDTO[]
+// @Router /schedule/ [get]
 func GetAllTasks(c *gin.Context) {
-	groupId := "1" // TODO: need to get groupID exually
+	groupId := c.Request.Header.Get("X-User-GroupId") // TODO: need to get groupID exually
 	// Get the schedule
 	schedule, err := service.GetAllTaskForGroup(c.Request.Context(), groupId)
 

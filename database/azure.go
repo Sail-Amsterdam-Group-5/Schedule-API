@@ -98,7 +98,11 @@ func ReadFilter(ctx context.Context, tableName string, filter string) ([]aztable
 		return nil, err
 	}
 
-	pager := client.NewListEntitiesPager(nil)
+	queryOptions := &aztables.ListEntitiesOptions{
+		Filter: &filter,
+	}
+
+	pager := client.NewListEntitiesPager(queryOptions)
 	var entities []aztables.EDMEntity
 
 	for pager.More() {
@@ -195,5 +199,6 @@ func BuildFilter(field, value string) string {
 
 // Helper function to construct filter strings for Azure Tables.
 func BuildDuoFilter(field, value, field2, value2 string) string {
-	return fmt.Sprintf("%s eq '%s' and %s eq '%s'", field, value, field2, value2)
+	return (field + " eq '" + value + "' and " + field2 + " eq '" + value2 + "'")
+	// return fmt.Sprintf("%s eq '%s' and %s eq '%s'", field, value, field2, value2)
 }
