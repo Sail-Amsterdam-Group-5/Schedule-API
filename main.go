@@ -9,6 +9,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -46,6 +47,17 @@ func main() {
 		//		schedule.GET("/task/checkins", middleware.CheckScope("team-lead"), controller.GetAllCheckIns)
 
 	}
+
+	// Health check endpoint
+	router.GET("/health", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "OK",
+		})
+	})
+
+	// Prometheus metrics endpoint
+	router.GET("/metrics", gin.WrapH(promhttp.Handler()))
+
 	port := os.Getenv("HTTP_PLATFORM_PORT")
 	if port == "" {
 		port = "8080"
