@@ -4,6 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"net/http"
+	"os"
 	"schedule-api/model"
 	"schedule-api/repository"
 
@@ -57,6 +60,7 @@ func GetTaskById(ctx context.Context, id string) (model.TaskDTO, error) {
 func UpdateTask(c context.Context, task model.TaskDTO) (model.Task, error) {
 	if repository.UpdateTask(c, task) {
 		DbTask, err := repository.GetTaskById(c, task.Id)
+		Location, err := GetLocation(DbTask.Location)
 		taskModel := model.Task{
 			Id:          DbTask.Id,
 			GroupId:     DbTask.GroupId,
@@ -65,9 +69,12 @@ func UpdateTask(c context.Context, task model.TaskDTO) (model.Task, error) {
 			Date:        DbTask.Date,
 			StartTime:   DbTask.StartTime,
 			EndTime:     DbTask.EndTime,
-			Location:    DbTask.Location,
+			Location:    Location,
 		}
-		return taskModel, err
+		if err != nil {
+			return model.Task{}, err
+		}
+		return taskModel, nil
 	}
 	return model.Task{}, errors.New("failed to update task")
 }
@@ -94,10 +101,29 @@ func CreateTask(ctx context.Context, task model.Task) (model.TaskDTO, error) {
 		Date:        task.Date,
 		StartTime:   task.StartTime,
 		EndTime:     task.EndTime,
-		Location:    task.Location,
+		Location:    task.Location.Id,
 	}
 
 	response, err := repository.CreateTask(ctx, taskDTO)
 
 	return response, err
+}
+
+func GetLocation(locationId string) (model.LocationDTO, error) {
+	url := fmt.Sprintf("%s/%s", os.Getenv("MAP_API_URL"), locationId)
+	resp, err := http.Get(url)
+	if err != nil {
+		return model.LocationDTO{}, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return model.LocationDTO{}, errors.New("failed to get location")
+	}
+
+	var location model.LocationDTO
+	if err := json.NewDecoder(resp.Body).Decode(&location); err != nil {
+		return model.LocationDTO{}, err
+	}
+	return location, nil
 }

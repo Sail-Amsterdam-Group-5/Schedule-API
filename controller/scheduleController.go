@@ -197,7 +197,7 @@ func CreateDummyData(c *gin.Context) {
 		Date:        "25-08-2025",
 		StartTime:   "12:00",
 		EndTime:     "14:00",
-		Location:    "1234654897",
+		Location:    model.LocationDTO{Id: "12594e4d-4fa3-44f6-8e59-8f25b7902881"},
 	}
 	task2 := model.Task{
 		GroupId:     "1",
@@ -206,7 +206,7 @@ func CreateDummyData(c *gin.Context) {
 		Date:        "25-08-2025",
 		StartTime:   "14:00",
 		EndTime:     "16:00",
-		Location:    "1234654897",
+		Location:    model.LocationDTO{Id: "12594e4d-4fa3-44f6-8e59-8f25b7902881"},
 	}
 	task3 := model.Task{
 		GroupId:     "1",
@@ -215,7 +215,7 @@ func CreateDummyData(c *gin.Context) {
 		Date:        "24-08-2025",
 		StartTime:   "12:00",
 		EndTime:     "19:00",
-		Location:    "1234654897",
+		Location:    model.LocationDTO{Id: "12594e4d-4fa3-44f6-8e59-8f25b7902881"},
 	}
 
 	response, err := service.CreateTask(c.Request.Context(), task)
