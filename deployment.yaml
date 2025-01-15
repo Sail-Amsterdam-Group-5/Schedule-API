@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sail-schedule-api
+  labels:
+    app: sail-schedule-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sail-schedule-api
+  template:
+    metadata:
+      labels:
+        app: sail-schedule-api
+    spec:
+      containers:
+        - name: sail-schedule-api
+          image: earlybirdreal/sail-schedule-api:latest
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sail-schedule-api
+  labels:
+    app: sail-schedule-api
+spec:
+  selector:
+    app: sail-schedule-api
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
