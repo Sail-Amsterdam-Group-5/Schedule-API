@@ -71,3 +71,15 @@ spec:
     - protocol: TCP
       port: 8080
       targetPort: 8080
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: sail-schedule-api-route
+  namespace: oscar-dev
+spec:
+  to:
+    kind: Service
+    name: sail-schedule-api-service
+  port:
+    targetPort: 8080
