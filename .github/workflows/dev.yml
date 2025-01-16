@@ -57,6 +57,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Log in to OpenShift
+        run: oc login $OPENSHIFT_URL --token=$OPENSHIFT_TOKEN
+
+      - name: Create/Update Secrets
+        run: |
+          oc create secret generic azure-storage-secret \
+            --from-literal=AZURE_AccountName=$AZURE_AccountName \
+            --from-literal=AZURE_AccountKey=$AZURE_AccountKey \
+            --from-literal=AZURE_EndpointSuffix=$AZURE_EndpointSuffix \
+            --from-literal=AZURE_TableEndpoint=$AZURE_TableEndpoint \
+            --from-literal=HTTP_PLATFORM_PORT=$HTTP_PLATFORM_PORT \
+            --from-literal=MAP_API_URL=$MAP_API_URL \
+            --dry-run=client -o yaml | oc apply -f -
+
       # Step 5: Build and Push Docker Image
       - name: Build and push Docker image
         run: |

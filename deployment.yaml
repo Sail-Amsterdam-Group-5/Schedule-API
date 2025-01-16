@@ -19,6 +19,37 @@ spec:
           image: earlybirdreal/sail-schedule-api:latest
           ports:
             - containerPort: 8080
+          env:
+            - name: AZURE_AccountName
+              valueFrom:
+                secretKeyRef:
+                  name: azure-storage-secret
+                  key: AZURE_AccountName
+            - name: AZURE_AccountKey
+              valueFrom:
+                secretKeyRef:
+                  name: azure-storage-secret
+                  key: AZURE_AccountKey
+            - name: AZURE_EndpointSuffix
+              valueFrom:
+                secretKeyRef:
+                  name: azure-storage-secret
+                  key: AZURE_EndpointSuffix
+            - name: AZURE_TableEndpoint
+              valueFrom:
+                secretKeyRef:
+                  name: azure-storage-secret
+                  key: AZURE_TableEndpoint
+            - name: HTTP_PLATFORM_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: azure-storage-secret
+                  key: HTTP_PLATFORM_PORT
+            - name: MAP_API_URL
+              valueFrom:
+                secretKeyRef:
+                  name: azure-storage-secret
+                  key: MAP_API_URL
 ---
 apiVersion: v1
 kind: Service
