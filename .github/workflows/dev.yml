@@ -57,6 +57,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Step 2: Set up OpenShift CLI
+      - name: Install OpenShift CLI
+        run: |
+          curl -L https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux.tar.gz | tar -xz -C /usr/local/bin
+          oc version
+
       - name: Log in to OpenShift
         run: oc login $OPENSHIFT_URL --token=$OPENSHIFT_TOKEN
 
