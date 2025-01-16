@@ -61,7 +61,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: sail-schedule-api
+  name: sail-schedule-api-service
   labels:
     app: sail-schedule-api
 spec:
