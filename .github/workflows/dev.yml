@@ -64,7 +64,7 @@ jobs:
           oc version
 
       - name: Log in to OpenShift
-        run: oc login $OPENSHIFT_URL --token=$OPENSHIFT_TOKEN
+        run: oc login --server=$OPENSHIFT_URL --token=$OPENSHIFT_TOKEN
 
       - name: Create/Update Secrets
         run: |
