@@ -19,7 +19,7 @@ spec:
           image: earlybirdreal/sail-schedule-api:9b77694d66f9765b991f5c8198afd4d16c6835f9
           ports:
             - containerPort: 8080
-          env:
+          env: # Added these env variables... whyyy
             - name: AZURE_AccountName
               valueFrom:
                 secretKeyRef:
