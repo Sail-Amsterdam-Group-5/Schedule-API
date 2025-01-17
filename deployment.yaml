@@ -50,7 +50,7 @@ spec:
                 secretKeyRef:
                   name: azure-storage-secret
                   key: MAP_API_URL
-            - name: AZURE_CONNECTIONS_STRING
+            - name: AZURE_CONNECTION_STRING
               valueFrom:
                 secretKeyRef:
                   key: AZURE_CONNECTION_STRING
