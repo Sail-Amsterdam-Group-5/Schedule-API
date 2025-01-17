@@ -75,3 +75,24 @@ func CancelTask(ctx context.Context, userId string, taskId string) (model.CheckI
 	}
 	return response, nil
 }
+
+func GetAllCheckIns(ctx context.Context) ([]model.CheckInResponse, error) {
+	checkIns, err := repository.GetAllCheckins(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var response []model.CheckInResponse
+	for _, checkIn := range checkIns {
+		checkInResponse := model.CheckInResponse{
+			CheckInId:     checkIn.CheckInId,
+			UserId:        checkIn.UserId,
+			TaskId:        checkIn.TaskId,
+			CheckedIn:     checkIn.CheckedIn,
+			CheckInTime:   checkIn.CheckInTime,
+			CancelledTask: checkIn.CancelledTask,
+		}
+		response = append(response, checkInResponse)
+	}
+	return response, nil
+}

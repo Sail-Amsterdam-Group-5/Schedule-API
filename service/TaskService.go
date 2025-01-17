@@ -127,3 +127,15 @@ func GetLocation(locationId string) (model.LocationDTO, error) {
 	}
 	return location, nil
 }
+
+func GetAllTasks(ctx context.Context) ([]model.TaskDTO, error) {
+	tasks, err := repository.GetAllTasks(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(tasks) == 0 {
+		return nil, errors.New("no tasks found")
+	}
+	return tasks, nil
+}

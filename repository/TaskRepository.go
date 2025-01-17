@@ -7,6 +7,31 @@ import (
 	"schedule-api/model"
 )
 
+func GetAllTasks(ctx context.Context) ([]model.TaskDTO, error) {
+	entities, err := database.ReadAll(ctx, "Tasks")
+	if err != nil {
+		return nil, err
+	}
+
+	var tasks []model.TaskDTO
+	for _, entity := range entities {
+		task := model.TaskDTO{
+			PrimaryKey:  entity.PartitionKey,
+			RowKey:      entity.RowKey,
+			Id:          entity.Properties["Id"].(string),
+			GroupId:     entity.Properties["GroupId"].(string),
+			Name:        entity.Properties["Name"].(string),
+			Description: entity.Properties["Description"].(string),
+			Date:        entity.Properties["Date"].(string),
+			StartTime:   entity.Properties["StartTime"].(string),
+			EndTime:     entity.Properties["EndTime"].(string),
+			Location:    entity.Properties["Location"].(string),
+		}
+		tasks = append(tasks, task)
+	}
+	return tasks, nil
+}
+
 // get all for user
 func GetAllTaskForUser(ctx context.Context, groupId string) []model.TaskDTO {
 	filter := database.BuildFilter("GroupId", groupId)

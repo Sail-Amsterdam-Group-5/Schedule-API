@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"schedule-api/database"
 	"schedule-api/model"
-
-	"github.com/Azure/azure-sdk-for-go/sdk/data/aztables"
 )
 
 func SaveCheckIn(ctx context.Context, dto model.CheckInDTO) error {
@@ -45,10 +43,7 @@ func GetCheckin(ctx context.Context, pk string, rk string) (model.CheckInDTO, er
 	return dto, nil
 }
 
-func GetAllCheckins(ctx context.Context) ([]aztables.EDMEntity, error) {
-	return database.ReadAll(ctx, "CheckIn")
-}
-func GetAllCheckinDTOs(ctx context.Context) ([]model.CheckInDTO, error) {
+func GetAllCheckins(ctx context.Context) ([]model.CheckInDTO, error) {
 	entities, err := database.ReadAll(ctx, "CheckIn")
 	if err != nil {
 		return nil, err

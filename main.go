@@ -32,9 +32,10 @@ func main() {
 	schedule := router.Group("/schedule")
 	{
 		// object voor location in de task als response
-		schedule.POST("/", middleware.CheckScope("admin"), controller.CreateDummyData)     // only for testing
-		schedule.GET("/", middleware.CheckScope("volunteer"), controller.GetAllTasks)      //
-		schedule.GET("/:date", middleware.CheckScope("volunteer"), controller.GetSchedule) //
+		schedule.POST("/", middleware.CheckScope("admin"), controller.CreateDummyData)                  // only for testing
+		schedule.GET("/", middleware.CheckScope("volunteer"), controller.GetAllTasks)                   //
+		schedule.GET("/:date", middleware.CheckScope("volunteer"), controller.GetSchedule)              //
+		schedule.GET("/group/:groupid", middleware.CheckScope("volunteer"), controller.GetTasksByGroup) //
 
 		schedule.POST("/task", middleware.CheckScope("team-lead"), controller.CreateTask) //
 
@@ -45,9 +46,7 @@ func main() {
 		schedule.POST("/task/:id/checkin", middleware.CheckScope("volunteer"), controller.CheckIn)   //
 		schedule.POST("/task/:id/cancel", middleware.CheckScope("volunteer"), controller.CancelTask) //
 
-		//		schedule.GET("/task/:id/checkin", middleware.CheckScope("team-lead"), controller.GetCheckInForTask)
-		//		schedule.GET("/task/checkins", middleware.CheckScope("team-lead"), controller.GetAllCheckIns)
-
+		schedule.GET("/task/checkins", middleware.CheckScope("team-lead"), controller.GetAllCheckIns)
 	}
 
 	// Health check endpoint

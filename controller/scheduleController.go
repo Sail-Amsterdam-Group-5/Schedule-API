@@ -9,6 +9,24 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// GetSchedule gets all tasks.
+// @Summary Gets all tasks
+// @Description Get all Tasks
+// @Success 200 {object} model.TaskDTO[]
+// @Router /schedule [get]
+func GetAllTasks(c *gin.Context) {
+	// Get the schedule
+	schedule, err := service.GetAllTasks(c.Request.Context())
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Return the schedule
+	c.JSON(http.StatusOK, schedule)
+}
+
 // GetSchedule retreves the schedule for a specific date.
 // @Summary Get schedule by date
 // @Description Get a schedule by date
@@ -42,6 +60,26 @@ func GetTasks(c *gin.Context) {
 	id := c.Request.Header.Get("X-User-GroupId")
 	// Get the schedule
 	schedule, err := service.GetAllTaskForDate(c.Request.Context(), date, id)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// // Return the schedule
+	c.JSON(http.StatusOK, schedule)
+}
+
+// GetTasks retreves the tasks for a specific group.
+// @Summary Get the tasks for a group
+// @Description Get a list of tasks by  group
+// @Param groupid path string true "Group ID"
+// @Success 200 {object} model.TaskDTO[]
+// @Router /schedule/group/{groupid} [get]
+func GetTasksByGroup(c *gin.Context) {
+	groupid := c.Param("groupid")
+	// Get the schedule
+	schedule, err := service.GetAllTaskForGroup(c.Request.Context(), groupid)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -128,7 +166,7 @@ func UpdateTask(c *gin.Context) {
 // @Summary Deletes a task
 // @Description Delete a task
 // @Param id path string true "ID"
-// @Success 200 string
+// @Success 200 {object} string
 // @Router /schedule/task/{id} [delete]
 func DeleteTask(c *gin.Context) {
 	id := c.Param("ID")
@@ -188,6 +226,21 @@ func CancelTask(c *gin.Context) {
 	c.JSON(http.StatusOK, checkin)
 }
 
+// GetAllCheckIns gets all checkins.
+// @Summary Get all checkins
+// @Description Get all checkins
+// @Success 200 {object} model.CheckInDTO[]
+// @Router /schedule/task/checkins [get]
+func GetAllCheckIns(c *gin.Context) {
+	checkins, err := service.GetAllCheckIns(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, checkins)
+}
+
 func CreateDummyData(c *gin.Context) {
 	// Create a dummy task
 	task := model.Task{
@@ -232,23 +285,4 @@ func CreateDummyData(c *gin.Context) {
 		"Message": "Task created succesfully",
 		"task":    response,
 	})
-}
-
-// GetSchedule retreves the schedule for a specific date.
-// @Summary Get schedule by date
-// @Description Get a schedule by groupId
-// @Success 200 {object} model.TaskDTO[]
-// @Router /schedule/ [get]
-func GetAllTasks(c *gin.Context) {
-	groupId := c.Request.Header.Get("X-User-GroupId") // TODO: need to get groupID exually
-	// Get the schedule
-	schedule, err := service.GetAllTaskForGroup(c.Request.Context(), groupId)
-
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	// Return the schedule
-	c.JSON(http.StatusOK, schedule)
 }

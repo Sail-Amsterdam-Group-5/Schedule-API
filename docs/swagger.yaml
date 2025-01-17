@@ -6,27 +6,40 @@ definitions:
       checkedIn:
         type: boolean
       checkinId:
-        type: integer
+        type: string
       checkinTime:
         type: string
+      primaryKey:
+        type: string
+      reason:
+        type: string
+      rowKey:
+        type: string
       taskId:
-        type: integer
+        type: string
       userId:
-        type: integer
+        type: string
+    type: object
+  model.Location:
+    properties:
+      latitude:
+        type: number
+      longitude:
+        type: number
     type: object
   model.LocationDTO:
     properties:
-      address:
+      created_at:
         type: string
-      description:
+      icon:
         type: string
       id:
-        type: integer
-      lat:
-        type: number
-      lng:
-        type: number
+        type: string
+      location:
+        $ref: '#/definitions/model.Location'
       name:
+        type: string
+      ocean:
         type: string
     type: object
   model.Task:
@@ -38,7 +51,9 @@ definitions:
       endTime:
         type: string
       groupId:
-        type: integer
+        type: string
+      id:
+        type: string
       location:
         allOf:
         - $ref: '#/definitions/model.LocationDTO'
@@ -57,14 +72,20 @@ definitions:
       endTime:
         type: string
       groupId:
-        type: integer
+        type: string
       id:
-        type: integer
+        description: GUID
+        type: string
       location:
-        allOf:
-        - $ref: '#/definitions/model.LocationDTO'
         description: has to be object
+        type: string
       name:
+        type: string
+      primaryKey:
+        description: day + groupID
+        type: string
+      rowKey:
+        description: startTime + taskID
         type: string
       startTime:
         type: string
@@ -72,6 +93,15 @@ definitions:
 info:
   contact: {}
 paths:
+  /schedule:
+    get:
+      description: Get all Tasks
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.TaskDTO'
+      summary: Gets all tasks
   /schedule/{date}:
     get:
       description: Get a schedule by date
@@ -107,6 +137,21 @@ paths:
           schema:
             $ref: '#/definitions/model.TaskDTO'
       summary: Get the tasks by date and group
+  /schedule/group/{groupid}:
+    get:
+      description: Get a list of tasks by  group
+      parameters:
+      - description: Group ID
+        in: path
+        name: groupid
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.TaskDTO'
+      summary: Get the tasks for a group
   /schedule/task:
     post:
       description: Create a new task
@@ -122,6 +167,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.TaskDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
       summary: Create a new task
   /schedule/task/{id}:
     delete:
@@ -136,7 +185,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.TaskDTO'
+            type: string
       summary: Deletes a task
     get:
       description: Get a task by ID
@@ -166,20 +215,6 @@ paths:
           schema:
             $ref: '#/definitions/model.CheckInDTO'
       summary: Cancel a task
-    post:
-      description: CheckIn on a task
-      parameters:
-      - description: ID
-        in: path
-        name: id
-        required: true
-        type: string
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.CheckInDTO'
-      summary: CheckIn on a task
     put:
       description: Update a task
       parameters:
@@ -200,4 +235,19 @@ paths:
           schema:
             $ref: '#/definitions/model.TaskDTO'
       summary: Updates a task
+  /schedule/task/{id}/checkin:
+    post:
+      description: CheckIn on a task
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.CheckInDTO'
+      summary: CheckIn on a task
 swagger: "2.0"
