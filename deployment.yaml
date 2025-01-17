@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: sail-schedule-api
-          image: earlybirdreal/sail-schedule-api:baf72d1dc756c170fcd0bdc6b397cb151595eab7
+          image: earlybirdreal/sail-schedule-api:ece353f8538211cc7ebcdb06516eb8321aae1deb
           ports:
             - containerPort: 8080
           env: # Ree 2.0
