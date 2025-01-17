@@ -16,6 +16,8 @@ import (
 // Connection creates a new Azure Table client for the given table name.
 func Connection(tableName string) (*aztables.Client, error) {
 	connectionString := os.Getenv("AZURE_CONNECTION_STRING")
+	log.Println("Connection string is", connectionString)
+	log.Println("Connection string is", os.Getenv("AZURE_CONNECTION_STRING"))
 	if connectionString == "" {
 		return nil, fmt.Errorf("AZURE_STORAGE_CONNECTION_STRING is not set")
 	}
