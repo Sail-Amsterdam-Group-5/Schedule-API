@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/joho/godotenv"
 	"log"
 	"os"
 	"schedule-api/controller"
@@ -15,10 +14,10 @@ import (
 )
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatalf("Error loading .env file: %v", err)
-	}
+	//err := godotenv.Load()
+	//if err != nil {
+	//	log.Fatalf("Error loading .env file: %v", err)
+	//}
 	// Check for OC secrets
 	log.Println("Env test: %v", os.Getenv("HTTP_PLATFORM_PORT"))
 
