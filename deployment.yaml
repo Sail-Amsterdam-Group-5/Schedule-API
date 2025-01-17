@@ -19,7 +19,7 @@ spec:
           image: earlybirdreal/sail-schedule-api:ece8f8c8cd4ea334b127a4ceddf323f7e336303b
           ports:
             - containerPort: 8080
-          env: # Ree
+          env: # Ree 2.0
             - name: AZURE_AccountName
               valueFrom:
                 secretKeyRef:
