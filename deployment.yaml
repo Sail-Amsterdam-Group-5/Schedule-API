@@ -54,7 +54,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: AZURE_CONNECTION_STRING
-                  name: azure-connection-string
+                  name: azure-storage-secret
           resources:
             limits:
               cpu: "0.2"
