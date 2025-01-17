@@ -18,7 +18,7 @@ func main() {
 	//if err != nil {
 	//	log.Fatalf("Error loading .env file: %v", err)
 	//}
-
+	// Check for OC secrets
 	log.Println("Env test: %v", os.Getenv("HTTP_PLATFORM_PORT"))
 
 	router := gin.Default()
