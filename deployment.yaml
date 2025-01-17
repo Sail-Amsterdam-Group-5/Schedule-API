@@ -50,6 +50,11 @@ spec:
                 secretKeyRef:
                   name: azure-storage-secret
                   key: MAP_API_URL
+            - name: AZURE_CONNECTIONS_STRING
+              valueFrom:
+                secretKeyRef:
+                  key: AZURE_CONNECTION_STRING
+                  name: azure-connection-string
           resources:
             limits:
               cpu: "0.2"

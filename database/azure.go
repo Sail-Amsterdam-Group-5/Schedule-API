@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"time"
 
@@ -14,7 +15,7 @@ import (
 
 // Connection creates a new Azure Table client for the given table name.
 func Connection(tableName string) (*aztables.Client, error) {
-	connectionString := "DefaultEndpointsProtocol=https;AccountName=" + os.Getenv("AZURE_AccountName") + ";AccountKey=" + os.Getenv("AZURE_AccountKey") + ";TableEndpoint=" + os.Getenv("AZURE_TableEndpoint") + ";"
+	connectionString := os.Getenv("AZURE_CONNECTION_STRING")
 	if connectionString == "" {
 		return nil, fmt.Errorf("AZURE_STORAGE_CONNECTION_STRING is not set")
 	}
@@ -26,6 +27,7 @@ func Connection(tableName string) (*aztables.Client, error) {
 	// Check if the table exists, if not create it
 	_, err = serviceClient.CreateTable(context.Background(), tableName, nil)
 	if err != nil {
+		log.Println("WHY WONT YOU WORK", err)
 		var responseError *azcore.ResponseError
 		if errors.As(err, &responseError) && responseError.ErrorCode == "TableAlreadyExists" {
 			// Table already exists, ignore the error

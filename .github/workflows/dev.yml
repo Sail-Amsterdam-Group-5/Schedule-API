@@ -75,6 +75,7 @@ jobs:
             --from-literal=AZURE_TableEndpoint=${{secrets.AZURE_TableEndpoint}} \
             --from-literal=HTTP_PLATFORM_PORT=${{secrets.HTTP_PLATFORM_PORT}} \
             --from-literal=MAP_API_URL=${{secrets.MAP_API_URL}} \
+            --from-literal=AZURE_CONNECTION_STRING=${{secrets.AZURE_CONNECTION_STRING}} \
             --dry-run=client -o yaml | oc apply -f -
 
       # Step 5: Build and Push Docker Image
