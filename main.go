@@ -33,21 +33,21 @@ func main() {
 	{
 		// object voor location in de task als response
 		schedule.POST("/", middleware.CheckScope("admin"), controller.CreateDummyData)                  // only for testing
-		schedule.GET("/", middleware.CheckScope("volunteer"), controller.GetAllTasks)                   //
-		schedule.GET("/:date", middleware.CheckScope("volunteer"), controller.GetSchedule)              //
-		schedule.GET("/group/:groupid", middleware.CheckScope("volunteer"), controller.GetTasksByGroup) //
+		schedule.GET("/", middleware.CheckScope("volunteer"), controller.GetAllTasks)                   // Volunteer
+		schedule.GET("/:date", middleware.CheckScope("volunteer"), controller.GetSchedule)              // Volunteer
+		schedule.GET("/group/:groupid", middleware.CheckScope("volunteer"), controller.GetTasksByGroup) // Volunteer
 
-		schedule.POST("/task", middleware.CheckScope("team-lead"), controller.CreateTask) //
+		schedule.POST("/task", middleware.CheckScope("team-lead"), controller.CreateTask) // Team Lead
 
-		schedule.GET("/task/:id", middleware.CheckScope("volunteer"), controller.GetTask)       //
-		schedule.PUT("/task/:id", middleware.CheckScope("team-lead"), controller.UpdateTask)    //
-		schedule.DELETE("/task/:id", middleware.CheckScope("team-lead"), controller.DeleteTask) //
+		schedule.GET("/task/:id", middleware.CheckScope("volunteer"), controller.GetTask)       // Volunteer
+		schedule.PUT("/task/:id", middleware.CheckScope("team-lead"), controller.UpdateTask)    // Team Lead
+		schedule.DELETE("/task/:id", middleware.CheckScope("team-lead"), controller.DeleteTask) // Team Lead
 
-		schedule.POST("/task/:id/checkin", middleware.CheckScope("volunteer"), controller.CheckIn)   //
-		schedule.POST("/task/:id/cancel", middleware.CheckScope("volunteer"), controller.CancelTask) //
+		schedule.POST("/task/:id/checkin", middleware.CheckScope("volunteer"), controller.CheckIn)   // Volunteer
+		schedule.POST("/task/:id/cancel", middleware.CheckScope("volunteer"), controller.CancelTask) // Volunteer
 
-		schedule.GET("/task/checkins", middleware.CheckScope("team-lead"), controller.GetAllCheckIns)
-		schedule.GET("/task/checkins/:taskId/:UserId", middleware.CheckScope("volunteer"), controller.GetCheckInForTask)
+		schedule.GET("/task/checkins", middleware.CheckScope("team-lead"), controller.GetAllCheckIns)                    // Team Lead
+		schedule.GET("/task/checkins/:taskId/:UserId", middleware.CheckScope("volunteer"), controller.GetCheckInForTask) // Volunteer
 	}
 
 	// Health check endpoint
