@@ -29,7 +29,7 @@ func main() {
 	schedule := router.Group("/schedule")
 	{
 		// object voor location in de task als response
-		schedule.POST("/", middleware.CheckScope("admin"), controller.CreateDummyData)                  // only for testing
+		schedule.POST("/", middleware.CheckScope("admin"), controller.CreateDummyData)                  // on
 		schedule.GET("/", middleware.CheckScope("volunteer"), controller.GetAllTasks)                   // Volunteer
 		schedule.GET("/:date", middleware.CheckScope("volunteer"), controller.GetSchedule)              // Volunteer
 		schedule.GET("/group/:groupid", middleware.CheckScope("volunteer"), controller.GetTasksByGroup) // Volunteer
