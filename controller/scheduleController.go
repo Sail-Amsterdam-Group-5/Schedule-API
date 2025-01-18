@@ -1,10 +1,7 @@
 package controller
 
 import (
-	"encoding/json"
-	"io"
 	"net/http"
-	"os"
 
 	"schedule-api/model"
 	"schedule-api/service"
@@ -269,39 +266,4 @@ func GetCheckInForTask(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, checkin)
-}
-
-// @Summary Create dummy data
-// @Description Create dummy data
-// @Success 200 {object} string
-// @Router /schedule [post]
-func CreateDummyData(c *gin.Context) {
-
-	file, err := os.Open("Mockdata.json")
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	defer file.Close()
-
-	byteValue, err := io.ReadAll(file)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	var tasks []model.Task
-	if err := json.Unmarshal(byteValue, &tasks); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	for _, task := range tasks {
-		if _, err := service.CreateTask(c.Request.Context(), task); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "Tasks created successfully"})
 }
