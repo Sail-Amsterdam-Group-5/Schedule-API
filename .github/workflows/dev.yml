@@ -66,16 +66,16 @@ jobs:
       - name: Log in to OpenShift
         run: oc login --server=${{ secrets.OPENSHIFT_URL }} --token=${{ secrets.OPENSHIFT_TOKEN }}
 
-      - name: Create/Update Secrets
-        run: |
-          oc create secret generic azure-storage-secret-sc \
-            --from-literal=AZURE_AccountName=${{secrets.AZURE_AccountName}} \
-            --from-literal=AZURE_AccountKey=${{secrets.AZURE_AccountKey}} \
-            --from-literal=AZURE_EndpointSuffix=${{secrets.AZURE_EndpointSuffix}} \
-            --from-literal=AZURE_TableEndpoint=${{secrets.AZURE_TableEndpoint}} \
-            --from-literal=HTTP_PLATFORM_PORT=${{secrets.HTTP_PLATFORM_PORT}} \
-            --from-literal=MAP_API_URL=${{secrets.MAP_API_URL}} \
-            --from-literal=AZURE_CONNECTION_STRING=${{secrets.AZURE_CONNECTION_STRING}}
+      # - name: Create/Update Secrets
+      #   run: |
+      #     oc create secret generic azure-storage-secret-sc \
+      #       --from-literal=AZURE_AccountName=${{secrets.AZURE_AccountName}} \
+      #       --from-literal=AZURE_AccountKey=${{secrets.AZURE_AccountKey}} \
+      #       --from-literal=AZURE_EndpointSuffix=${{secrets.AZURE_EndpointSuffix}} \
+      #       --from-literal=AZURE_TableEndpoint=${{secrets.AZURE_TableEndpoint}} \
+      #       --from-literal=HTTP_PLATFORM_PORT=${{secrets.HTTP_PLATFORM_PORT}} \
+      #       --from-literal=MAP_API_URL=${{secrets.MAP_API_URL}} \
+      #       --from-literal=AZURE_CONNECTION_STRING=${{secrets.AZURE_CONNECTION_STRING}}
 
       # Step 5: Build and Push Docker Image
       - name: Build and push Docker image
