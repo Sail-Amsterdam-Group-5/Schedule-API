@@ -1,71 +1,139 @@
 [
     {
-    "name": "Cleaning toilets",
-    "description": "Clean the toilets in the building",
-    "date": "21-08-2025",
-    "startTime": "16:00",
-    "endTime": "17:30",
+    "name": "Hospitality",
+    "description": "Various tasks such as greeting and guiding guests at different festival locations/events.",
+    "date": "25-08-21T10:00:00Z",
+    "startTime": "2025-08-21T10:00:00Z",
+    "endTime": "2025-08-21T14:00:00Z",
+    "groupId": "1",
+    "location": {
+      "id": "76ae3626-de22-46e3-8266-0b9c19a95273"
+        }
+    },
+    {
+    "name": "Production",
+    "description": "Assist performing artists, organisational and technical support.",
+    "date": "25-08-21T15:00:00Z",
+    "startTime": "2025-08-21T15:00:00Z",
+    "endTime": "2025-08-21T19:00:00Z",
+    "groupId": "1",
+    "location": {
+      "id": "76ae32345-de22-46e3-8266-0b9c19a95273"
+        }
+    },
+    {
+    "name": "Public information",
+    "description": "Informing guests at information points on the festival grounds",
+    "date": "25-08-21T20:00:00Z",
+    "startTime": "2025-08-21T20:00:00Z",
+    "endTime": "2025-08-21T23:00:00Z",
+    "groupId": "1",
+    "location": {
+      "id": "76ae32345-de22-51e3-8266-0b9c19a95273"
+        }
+    },
+    
+  
+  {
+    "name": "Security",
+    "description": "Supporting the hired security company, Traffic assistant.",
+    "date": "25-08-22T09:00:00Z",
+    "startTime": "2025-08-22T09:00:00Z",
+    "endTime": "2025-08-22T12:00:00Z",
     "groupId": "1",
     "location": {
       "id": "76ae3626-de22-46e3-8266-0b9c19a95273"
         }
   },
-
-  {
-    "name": "Cleaning toilets",
-    "description": "Clean the toilets in the building",
-    "date": "21-08-2025",
-    "startTime": "18:00",
-    "endTime": "20:00",
+    {
+    "name": "Media",
+    "description": "Supporting the press centre including photography, reporting, etc.",
+    "date": "25-08-22T13:00:00Z",
+    "startTime": "2025-08-22T13:00:00Z",
+    "endTime": "2025-08-22T18:00:00Z",
     "groupId": "1",
     "location": {
-      "id": "703381d7-b67f-4f17-a920-e5c1b3300ce0"
-    }
-  },
-
-  {
-    "name": "Informationpoint",
-    "description": "Task is to inform people about the event",
-    "date": "21-08-2025",
-    "startTime": "10:00",
-    "endTime": "12:00",
-    "groupId": "2",
-    "location": {
-      "id": "dc40d7fc-ea0e-4791-aceb-6ae3087ce61a"
+      "id": "76ae32345-de22-46e3-8266-0b9cdde95273"
         }
   },
-
-  {
-    "name": "Informationpoint",
-    "description": "Task is to inform people about the event",
-    "date": "21-08-2025",
-    "startTime": "14:00",
-    "endTime": "18:00",
-    "groupId": "2",
+    {
+    "name": "General Duty",
+    "description": "Support role at the operations center of SAIL",
+    "date": "25-08-22T19:00:00Z",
+    "startTime": "2025-08-22T19:00:00Z",
+    "endTime": "2025-08-22T23:00:00Z",
+    "groupId": "1",
     "location": {
-      "id": "dc40d7fc-ea0e-4791-aceb-6ae3087ce61a"
+      "id": "76ae32345-de22-51e3-8266-0b9c19a22373"
         }
-  }  ,
+  },
+  
   {
-    "name": "Schip demonstation",
-    "description": "Demonstrate the ships",
-    "date": "22-08-2025",
-    "startTime": "14:00",
-    "endTime": "16:00",
-    "groupId": "3",
+    "name": "Hospitality",
+    "description": "Various tasks such as greeting and guiding guests at different festival locations/events.",
+    "date": "25-08-23T10:00:00Z",
+    "startTime": "2025-08-23T10:00:00Z",
+    "endTime": "2025-08-23T14:00:00Z",
+    "groupId": "1",
     "location": {
-      "id": "f0cb2951-6c97-4ed2-ada1-adb4038b7cb6"
+      "id": "76ae3626-de22-46e3-8266-0b9c19a95273"
         }
-  }  ,
+    },
+    {
+    "name": "Production",
+    "description": "Assist performing artists, organisational and technical support.",
+    "date": "25-08-23T15:00:00Z",
+    "startTime": "2025-08-23T15:00:00Z",
+    "endTime": "2025-08-23T19:00:00Z",
+    "groupId": "1",
+    "location": {
+      "id": "76ae32345-de22-46e3-8266-0b9c19a95273"
+        }
+    },
+    {
+    "name": "Public information",
+    "description": "Informing guests at information points on the festival grounds",
+    "date": "25-08-23T20:00:00Z",
+    "startTime": "2025-08-23T20:00:00Z",
+    "endTime": "2025-08-23T23:00:00Z",
+    "groupId": "1",
+    "location": {
+      "id": "76ae32345-de22-51e3-8266-0b9c19a95273"
+        }
+    },
+    
+  
   {
-    "name": "Schip tour",
-    "description": "Give tours on the ships",
-    "date": "24-08-2025",
-    "startTime": "14:00",
-    "endTime": "18:00",
-    "groupId": "4",
+    "name": "Security",
+    "description": "Supporting the hired security company, Traffic assistant.",
+    "date": "25-08-24T09:00:00Z",
+    "startTime": "2025-08-24T09:00:00Z",
+    "endTime": "2025-08-24T12:00:00Z",
+    "groupId": "1",
     "location": {
-      "id": "0d01ba27-f0d7-45da-8973-792268933105"
+      "id": "76ae3626-de22-46e3-8266-0b9c19a95273"
         }
-  }  
+  },
+    {
+    "name": "Media",
+    "description": "Supporting the press centre including photography, reporting, etc.",
+    "date": "25-08-24T13:00:00Z",
+    "startTime": "2025-08-24T13:00:00Z",
+    "endTime": "2025-08-24T18:00:00Z",
+    "groupId": "1",
+    "location": {
+      "id": "76ae32345-de22-46e3-8266-0b9cdde95273"
+        }
+  },
+    {
+    "name": "ICT",
+    "description": "Supporting the network, technical support.",
+    "date": "25-08-24T19:00:00Z",
+    "startTime": "2025-08-24T19:00:00Z",
+    "endTime": "2025-08-24T23:00:00Z",
+    "groupId": "1",
+    "location": {
+      "id": "76ae32345-de22-51e3-8266-0b9c19a22373"
+        }
+  }
 ]
