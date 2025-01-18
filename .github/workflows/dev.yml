@@ -68,7 +68,7 @@ jobs:
 
       - name: Create/Update Secrets
         run: |
-          oc create secret generic azure-storage-secret \
+          oc create secret generic azure-storage-secret-schedule \
             --from-literal=AZURE_AccountName=${{secrets.AZURE_AccountName}} \
             --from-literal=AZURE_AccountKey=${{secrets.AZURE_AccountKey}} \
             --from-literal=AZURE_EndpointSuffix=${{secrets.AZURE_EndpointSuffix}} \
