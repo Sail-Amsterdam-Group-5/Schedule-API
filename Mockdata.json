@@ -1,0 +1,71 @@
+[
+    {
+    "name": "Cleaning toilets",
+    "description": "Clean the toilets in the building",
+    "date": "21-08-2025",
+    "startTime": "16:00",
+    "endTime": "17:30",
+    "groupId": "1",
+    "location": {
+      "id": "76ae3626-de22-46e3-8266-0b9c19a95273"
+        }
+  },
+
+  {
+    "name": "Cleaning toilets",
+    "description": "Clean the toilets in the building",
+    "date": "21-08-2025",
+    "startTime": "18:00",
+    "endTime": "20:00",
+    "groupId": "1",
+    "location": {
+      "id": "703381d7-b67f-4f17-a920-e5c1b3300ce0"
+    }
+  },
+
+  {
+    "name": "Informationpoint",
+    "description": "Task is to inform people about the event",
+    "date": "21-08-2025",
+    "startTime": "10:00",
+    "endTime": "12:00",
+    "groupId": "2",
+    "location": {
+      "id": "dc40d7fc-ea0e-4791-aceb-6ae3087ce61a"
+        }
+  },
+
+  {
+    "name": "Informationpoint",
+    "description": "Task is to inform people about the event",
+    "date": "21-08-2025",
+    "startTime": "14:00",
+    "endTime": "18:00",
+    "groupId": "2",
+    "location": {
+      "id": "dc40d7fc-ea0e-4791-aceb-6ae3087ce61a"
+        }
+  }  ,
+  {
+    "name": "Schip demonstation",
+    "description": "Demonstrate the ships",
+    "date": "22-08-2025",
+    "startTime": "14:00",
+    "endTime": "16:00",
+    "groupId": "3",
+    "location": {
+      "id": "f0cb2951-6c97-4ed2-ada1-adb4038b7cb6"
+        }
+  }  ,
+  {
+    "name": "Schip tour",
+    "description": "Give tours on the ships",
+    "date": "24-08-2025",
+    "startTime": "14:00",
+    "endTime": "18:00",
+    "groupId": "4",
+    "location": {
+      "id": "0d01ba27-f0d7-45da-8973-792268933105"
+        }
+  }  
+]

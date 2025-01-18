@@ -1,14 +1,16 @@
 package model
 
+import "time"
+
 type TaskDTO struct {
-	PrimaryKey  string `json:"primaryKey"` // day + groupID
-	RowKey      string `json:"rowKey"`     // startTime + taskID
-	Id          string `json:"id"`         // GUID
-	GroupId     string `json:"groupId"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Date        string `json:"date"`
-	StartTime   string `json:"startTime"`
-	EndTime     string `json:"endTime"`
-	Location    string `json:"location"` // has to be object
+	PrimaryKey  string    `json:"primaryKey"`
+	RowKey      string    `json:"rowKey"`
+	Id          string    `json:"id"`
+	GroupId     string    `json:"groupId"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Date        time.Time `json:"date"`
+	StartTime   time.Time `json:"startTime"`
+	EndTime     time.Time `json:"endTime"`
+	Utillity    string    `json:"utillity"`
 }

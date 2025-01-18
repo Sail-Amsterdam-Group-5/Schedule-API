@@ -27,6 +27,18 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "post": {
+                "description": "Create dummy data",
+                "summary": "Create dummy data",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
             }
         },
         "/schedule/group/{groupid}": {
@@ -78,6 +90,50 @@ const docTemplate = `{
                         "description": "Internal Server Error",
                         "schema": {
                             "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/schedule/task/checkins": {
+            "get": {
+                "description": "Get all checkins",
+                "summary": "Get all checkins",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.CheckInDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/schedule/task/checkins/{taskId}/{UserId}": {
+            "get": {
+                "description": "Get a checkin for a task",
+                "summary": "Get a checkin for a task",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Task ID",
+                        "name": "taskId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "UserId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "boolean"
                         }
                     }
                 }
@@ -141,7 +197,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "ID",
+                        "description": "id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -155,8 +211,10 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
-            "patch": {
+            }
+        },
+        "/schedule/task/{id}/cancel": {
+            "post": {
                 "description": "Cancel a task",
                 "summary": "Cancel a task",
                 "parameters": [
@@ -223,36 +281,6 @@ const docTemplate = `{
                     }
                 }
             }
-        },
-        "/schedule/{date}/{groupid}": {
-            "get": {
-                "description": "Get a list of tasks by date and group",
-                "summary": "Get the tasks by date and group",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Date",
-                        "name": "date",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Group ID",
-                        "name": "groupid",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.TaskDTO"
-                        }
-                    }
-                }
-            }
         }
     },
     "definitions": {
@@ -299,29 +327,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.LocationDTO": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "icon": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "location": {
-                    "$ref": "#/definitions/model.Location"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "ocean": {
-                    "type": "string"
-                }
-            }
-        },
         "model.Task": {
             "type": "object",
             "properties": {
@@ -340,19 +345,14 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
-                "location": {
-                    "description": "has to be object",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.LocationDTO"
-                        }
-                    ]
-                },
                 "name": {
                     "type": "string"
                 },
                 "startTime": {
                     "type": "string"
+                },
+                "utillity": {
+                    "$ref": "#/definitions/model.Utillity"
                 }
             }
         },
@@ -372,25 +372,44 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "description": "GUID",
-                    "type": "string"
-                },
-                "location": {
-                    "description": "has to be object",
                     "type": "string"
                 },
                 "name": {
                     "type": "string"
                 },
                 "primaryKey": {
-                    "description": "day + groupID",
                     "type": "string"
                 },
                 "rowKey": {
-                    "description": "startTime + taskID",
                     "type": "string"
                 },
                 "startTime": {
+                    "type": "string"
+                },
+                "utillity": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.Utillity": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "icon": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "location": {
+                    "$ref": "#/definitions/model.Location"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "ocean": {
                     "type": "string"
                 }
             }

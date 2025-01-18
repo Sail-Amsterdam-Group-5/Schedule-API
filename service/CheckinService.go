@@ -6,6 +6,7 @@ import (
 	"schedule-api/repository"
 	"time"
 
+	"github.com/go-errors/errors"
 	"github.com/google/uuid"
 )
 
@@ -16,16 +17,17 @@ func Checkin(ctx context.Context, userId string, taskId string) (model.CheckInRe
 		panic(err)
 	}
 
-	formatedTime := time.Now().Format("15:04")
+	now := time.Now()
 	dto := model.CheckInDTO{
 		PrimaryKey:    taskId,
-		RowKey:        userId + time.Now().Format(time.Stamp),
+		RowKey:        userId + now.GoString(),
 		CheckInId:     id.String(),
 		UserId:        userId,
 		TaskId:        taskId,
 		CheckedIn:     true,
-		CheckInTime:   formatedTime,
+		CheckInTime:   now,
 		CancelledTask: false,
+		Reason:        "",
 	}
 
 	err = repository.SaveCheckIn(ctx, dto)
@@ -44,21 +46,46 @@ func Checkin(ctx context.Context, userId string, taskId string) (model.CheckInRe
 	return response, nil
 }
 
-func CancelTask(ctx context.Context, userId string, taskId string) (model.CheckInResponse, error) {
+func CancelTask(ctx context.Context, userId string, taskId string, reason string) (model.CheckInResponse, error) {
+	existingCheckIn, err := repository.GetCheckin(ctx, userId, taskId) // doet het niet
+	if existingCheckIn.Reason != "" {
+		return model.CheckInResponse{}, errors.New("Task already cancelled")
+	}
+	if err == nil && existingCheckIn.Reason != "" {
+		existingCheckIn.CancelledTask = true
+		existingCheckIn.Reason = reason
+		err = repository.UpdateCheckin(ctx, existingCheckIn)
+		if err != nil {
+			return model.CheckInResponse{}, err
+		}
+
+		response := model.CheckInResponse{
+			CheckInId:     existingCheckIn.CheckInId,
+			UserId:        existingCheckIn.UserId,
+			TaskId:        existingCheckIn.TaskId,
+			CheckedIn:     existingCheckIn.CheckedIn,
+			CheckInTime:   existingCheckIn.CheckInTime,
+			CancelledTask: existingCheckIn.CancelledTask,
+			Reason:        existingCheckIn.Reason,
+		}
+		return response, nil
+	}
+
 	id, err := uuid.NewRandom()
 	if err != nil {
 		panic(err)
 	}
-	formatedTime := time.Now().Format("15:04")
+	now := time.Now()
 	dto := model.CheckInDTO{
 		PrimaryKey:    taskId,
-		RowKey:        userId + time.Now().Format(time.Stamp),
+		RowKey:        userId + id.String(),
 		CheckInId:     id.String(),
 		UserId:        userId,
 		TaskId:        taskId,
 		CheckedIn:     false,
-		CheckInTime:   formatedTime,
+		CheckInTime:   now,
 		CancelledTask: true,
+		Reason:        reason,
 	}
 	err = repository.SaveCheckIn(ctx, dto)
 	if err != nil {
@@ -72,6 +99,7 @@ func CancelTask(ctx context.Context, userId string, taskId string) (model.CheckI
 		CheckedIn:     dto.CheckedIn,
 		CheckInTime:   dto.CheckInTime,
 		CancelledTask: dto.CancelledTask,
+		Reason:        dto.Reason,
 	}
 	return response, nil
 }
@@ -95,4 +123,12 @@ func GetAllCheckIns(ctx context.Context) ([]model.CheckInResponse, error) {
 		response = append(response, checkInResponse)
 	}
 	return response, nil
+}
+
+func GetCheckInForTask(ctx context.Context, userId string, taskId string) (bool, error) {
+	checkIn, err := repository.CheckCheckin(ctx, taskId, userId)
+	if err != nil {
+		return false, err
+	}
+	return checkIn, nil
 }

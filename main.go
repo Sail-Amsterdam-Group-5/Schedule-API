@@ -47,6 +47,7 @@ func main() {
 		schedule.POST("/task/:id/cancel", middleware.CheckScope("volunteer"), controller.CancelTask) //
 
 		schedule.GET("/task/checkins", middleware.CheckScope("team-lead"), controller.GetAllCheckIns)
+		schedule.GET("/task/checkins/:taskId/:UserId", middleware.CheckScope("volunteer"), controller.GetCheckInForTask)
 	}
 
 	// Health check endpoint

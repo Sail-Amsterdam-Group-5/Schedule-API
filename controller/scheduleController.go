@@ -1,7 +1,10 @@
 package controller
 
 import (
+	"encoding/json"
+	"io"
 	"net/http"
+	"os"
 
 	"schedule-api/model"
 	"schedule-api/service"
@@ -55,20 +58,20 @@ func GetSchedule(c *gin.Context) {
 // @Param groupid path string true "Group ID"
 // @Success 200 {object} model.TaskDTO[]
 // @Router /schedule/{date}/{groupid} [get]
-func GetTasks(c *gin.Context) {
-	date := c.Param("date")
-	id := c.Request.Header.Get("X-User-GroupId")
-	// Get the schedule
-	schedule, err := service.GetAllTaskForDate(c.Request.Context(), date, id)
+// func GetTasks(c *gin.Context) { // do i use this?
+// 	date := c.Param("date")
+// 	id := c.Param("groupid")
+// 	// Get the schedule
+// 	schedule, err := service.GetAllTaskForDate(c.Request.Context(), date, id)
 
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+// 	if err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
 
-	// // Return the schedule
-	c.JSON(http.StatusOK, schedule)
-}
+// 	// // Return the schedule
+// 	c.JSON(http.StatusOK, schedule)
+// }
 
 // GetTasks retreves the tasks for a specific group.
 // @Summary Get the tasks for a group
@@ -165,11 +168,11 @@ func UpdateTask(c *gin.Context) {
 // DeleteTask deletes a Task.
 // @Summary Deletes a task
 // @Description Delete a task
-// @Param id path string true "ID"
+// @Param id path string true "id"
 // @Success 200 {object} string
 // @Router /schedule/task/{id} [delete]
 func DeleteTask(c *gin.Context) {
-	id := c.Param("ID")
+	id := c.Param("id")
 	task, err := service.GetTaskById(c.Request.Context(), id)
 
 	if err != nil {
@@ -211,12 +214,19 @@ func CheckIn(c *gin.Context) {
 // @Description Cancel a task
 // @Param id path string true "ID"
 // @Success 200 {object} model.CheckInDTO
-// @Router /schedule/task/{id} [patch]
+// @Router /schedule/task/{id}/cancel [post]
 func CancelTask(c *gin.Context) {
 	taskId := c.Param("id")
 	userId := c.Request.Header.Get("X-User-Id")
-
-	checkin, err := service.CancelTask(c.Request.Context(), userId, taskId)
+	var requestBody struct {
+		Reason string `json:"reason"`
+	}
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	reason := requestBody.Reason
+	checkin, err := service.CancelTask(c.Request.Context(), userId, taskId, reason)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -241,48 +251,57 @@ func GetAllCheckIns(c *gin.Context) {
 	c.JSON(http.StatusOK, checkins)
 }
 
-func CreateDummyData(c *gin.Context) {
-	// Create a dummy task
-	task := model.Task{
-		GroupId:     "1",
-		Name:        "Dummy Task 1",
-		Description: "Task 1: This is a dummy task \n 2: This is a dummy task",
-		Date:        "25-08-2025",
-		StartTime:   "12:00",
-		EndTime:     "14:00",
-		Location:    model.LocationDTO{Id: "12594e4d-4fa3-44f6-8e59-8f25b7902881"},
-	}
-	task2 := model.Task{
-		GroupId:     "1",
-		Name:        "Dummy Task 2",
-		Description: "This is a dummy task",
-		Date:        "25-08-2025",
-		StartTime:   "14:00",
-		EndTime:     "16:00",
-		Location:    model.LocationDTO{Id: "12594e4d-4fa3-44f6-8e59-8f25b7902881"},
-	}
-	task3 := model.Task{
-		GroupId:     "1",
-		Name:        "Dummy Task 3",
-		Description: "This is a dummy task",
-		Date:        "24-08-2025",
-		StartTime:   "12:00",
-		EndTime:     "19:00",
-		Location:    model.LocationDTO{Id: "12594e4d-4fa3-44f6-8e59-8f25b7902881"},
-	}
+// GetCheckInForTask gets a checkin for a task.
+// @Summary Get a checkin for a task
+// @Description Get a checkin for a task
+// @Param taskId path string true "Task ID"
+// @Param UserId path string true "User ID"
+// @Success 200 {boolean} boolean
+// @Router /schedule/task/checkins/{taskId}/{UserId} [get]
+func GetCheckInForTask(c *gin.Context) {
+	taskId := c.Param("taskId")
+	userId := c.Param("UserId")
 
-	response, err := service.CreateTask(c.Request.Context(), task)
-	response, err = service.CreateTask(c.Request.Context(), task2)
-	response, err = service.CreateTask(c.Request.Context(), task3)
-
+	checkin, err := service.GetCheckInForTask(c.Request.Context(), userId, taskId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	// // Return the schedule
-	c.JSON(http.StatusOK, gin.H{
-		"Message": "Task created succesfully",
-		"task":    response,
-	})
+	c.JSON(http.StatusOK, checkin)
+}
+
+// @Summary Create dummy data
+// @Description Create dummy data
+// @Success 200 {object} string
+// @Router /schedule [post]
+func CreateDummyData(c *gin.Context) {
+
+	file, err := os.Open("Mockdata.json")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	defer file.Close()
+
+	byteValue, err := io.ReadAll(file)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	var tasks []model.Task
+	if err := json.Unmarshal(byteValue, &tasks); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	for _, task := range tasks {
+		if _, err := service.CreateTask(c.Request.Context(), task); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Tasks created successfully"})
 }

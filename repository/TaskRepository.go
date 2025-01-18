@@ -3,9 +3,20 @@ package repository
 import (
 	"context"
 	"errors"
+	"log"
 	"schedule-api/database"
 	"schedule-api/model"
+	"time"
 )
+
+func parseTime(dateStr string) time.Time {
+	parsedTime, err := time.Parse(time.RFC3339, dateStr)
+	if err != nil {
+		log.Printf("Error parsing time: %v", err)
+		return time.Time{}
+	}
+	return parsedTime
+}
 
 func GetAllTasks(ctx context.Context) ([]model.TaskDTO, error) {
 	entities, err := database.ReadAll(ctx, "Tasks")
@@ -22,10 +33,10 @@ func GetAllTasks(ctx context.Context) ([]model.TaskDTO, error) {
 			GroupId:     entity.Properties["GroupId"].(string),
 			Name:        entity.Properties["Name"].(string),
 			Description: entity.Properties["Description"].(string),
-			Date:        entity.Properties["Date"].(string),
-			StartTime:   entity.Properties["StartTime"].(string),
-			EndTime:     entity.Properties["EndTime"].(string),
-			Location:    entity.Properties["Location"].(string),
+			Date:        parseTime(entity.Properties["Date"].(string)),
+			StartTime:   parseTime(entity.Properties["StartTime"].(string)),
+			EndTime:     parseTime(entity.Properties["EndTime"].(string)),
+			Utillity:    entity.Properties["Location"].(string),
 		}
 		tasks = append(tasks, task)
 	}
@@ -48,10 +59,10 @@ func GetAllTaskForUser(ctx context.Context, groupId string) []model.TaskDTO {
 			GroupId:     entity.Properties["GroupId"].(string),
 			Name:        entity.Properties["Name"].(string),
 			Description: entity.Properties["Description"].(string),
-			Date:        entity.Properties["Date"].(string),
-			StartTime:   entity.Properties["StartTime"].(string),
-			EndTime:     entity.Properties["EndTime"].(string),
-			Location:    entity.Properties["Location"].(string),
+			Date:        parseTime(entity.Properties["Date"].(string)),
+			StartTime:   parseTime(entity.Properties["StartTime"].(string)),
+			EndTime:     parseTime(entity.Properties["EndTime"].(string)),
+			Utillity:    entity.Properties["Location"].(string),
 		}
 		tasks = append(tasks, task)
 	}
@@ -73,10 +84,10 @@ func GetAllTaskForGroup(ctx context.Context, groupId string) ([]model.TaskDTO, e
 			GroupId:     entity.Properties["GroupId"].(string),
 			Name:        entity.Properties["Name"].(string),
 			Description: entity.Properties["Description"].(string),
-			Date:        entity.Properties["Date"].(string),
-			StartTime:   entity.Properties["StartTime"].(string),
-			EndTime:     entity.Properties["EndTime"].(string),
-			Location:    entity.Properties["Location"].(string),
+			Date:        parseTime(entity.Properties["Date"].(string)),
+			StartTime:   parseTime(entity.Properties["StartTime"].(string)),
+			EndTime:     parseTime(entity.Properties["EndTime"].(string)),
+			Utillity:    entity.Properties["Location"].(string),
 		}
 		tasks = append(tasks, task)
 	}
@@ -100,10 +111,10 @@ func GetAllTaskForDate(ctx context.Context, date string, groupId string) ([]mode
 			GroupId:     entity.Properties["GroupId"].(string),
 			Name:        entity.Properties["Name"].(string),
 			Description: entity.Properties["Description"].(string),
-			Date:        entity.Properties["Date"].(string),
-			StartTime:   entity.Properties["StartTime"].(string),
-			EndTime:     entity.Properties["EndTime"].(string),
-			Location:    entity.Properties["Location"].(string),
+			Date:        parseTime(entity.Properties["Date"].(string)),
+			StartTime:   parseTime(entity.Properties["StartTime"].(string)),
+			EndTime:     parseTime(entity.Properties["EndTime"].(string)),
+			Utillity:    entity.Properties["Location"].(string),
 		}
 		tasks = append(tasks, task)
 	}
@@ -126,10 +137,10 @@ func GetTaskById(ctx context.Context, id string) (model.TaskDTO, error) {
 			GroupId:     task[0].Properties["GroupId"].(string),
 			Name:        task[0].Properties["Name"].(string),
 			Description: task[0].Properties["Description"].(string),
-			Date:        task[0].Properties["Date"].(string),
-			StartTime:   task[0].Properties["StartTime"].(string),
-			EndTime:     task[0].Properties["EndTime"].(string),
-			Location:    task[0].Properties["Location"].(string),
+			Date:        parseTime(task[0].Properties["Date"].(string)),
+			StartTime:   parseTime(task[0].Properties["StartTime"].(string)),
+			EndTime:     parseTime(task[0].Properties["EndTime"].(string)),
+			Utillity:    task[0].Properties["Location"].(string),
 		}
 		return taskDTO, nil
 	}
@@ -146,7 +157,7 @@ func UpdateTask(c context.Context, task model.TaskDTO) bool {
 		"Date":        task.Date,
 		"StartTime":   task.StartTime,
 		"EndTime":     task.EndTime,
-		"Location":    task.Location,
+		"Location":    task.Utillity,
 	}
 	database.Update(c, "Tasks", task.PrimaryKey, task.RowKey, taskMap)
 	return true
@@ -168,7 +179,7 @@ func CreateTask(ctx context.Context, task model.TaskDTO) (model.TaskDTO, error) 
 		"Date":        task.Date,
 		"StartTime":   task.StartTime,
 		"EndTime":     task.EndTime,
-		"Location":    task.Location,
+		"Location":    task.Utillity,
 	}
 
 	err := database.Write(ctx, "Tasks", task.PrimaryKey, task.RowKey, taskMap)
