@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"time"
 
@@ -15,31 +14,42 @@ import (
 
 // Connection creates a new Azure Table client for the given table name.
 func Connection(tableName string) (*aztables.Client, error) {
+	// build connection string from environment variables
 	connectionString := os.Getenv("AZURE_CONNECTION_STRING")
-	log.Println("Connection string is", connectionString)
-	log.Println("Connection string is", os.Getenv("AZURE_CONNECTION_STRING"))
 	if connectionString == "" {
 		return nil, fmt.Errorf("AZURE_STORAGE_CONNECTION_STRING is not set")
 	}
+
+	// create a new service client
 	serviceClient, err := aztables.NewServiceClientFromConnectionString(connectionString, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create service client: %w", err)
 	}
 
-	// Check if the table exists, if not create it
-	_, err = serviceClient.CreateTable(context.Background(), tableName, nil)
-	if err != nil {
-		log.Println("WHY WONT YOU WORK", err)
-		var responseError *azcore.ResponseError
-		if errors.As(err, &responseError) && responseError.ErrorCode == "TableAlreadyExists" {
-			// Table already exists, ignore the error
-		} else {
-			return nil, fmt.Errorf("failed to create table: %w", err)
-		}
+	// Ensure the table exists, creating it if necessary
+	if err := ensureTableExists(serviceClient, tableName); err != nil {
+		return nil, err
 	}
 
-	client := serviceClient.NewClient(tableName)
-	return client, nil
+	// Create and return the table client
+	return serviceClient.NewClient(tableName), nil
+}
+
+func ensureTableExists(serviceClient *aztables.ServiceClient, tableName string) error {
+	const tableAlreadyExistsCode = "TableAlreadyExists"
+
+	_, err := serviceClient.CreateTable(context.Background(), tableName, nil)
+	if err != nil {
+		// Check if the error is due to the table already existing
+		var responseError *azcore.ResponseError
+		if errors.As(err, &responseError) && responseError.ErrorCode == tableAlreadyExistsCode {
+			return nil // Table already exists, nothing to do
+		}
+		// Other errors should be propagated
+		return fmt.Errorf("failed to create table %q: %w", tableName, err)
+	}
+
+	return nil // Table created successfully
 }
 
 // Write adds a new entity to the table.

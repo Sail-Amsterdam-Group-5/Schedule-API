@@ -59,8 +59,11 @@ func GetTaskById(ctx context.Context, id string) (model.TaskDTO, error) {
 // update a task
 func UpdateTask(c context.Context, task model.TaskDTO) (model.Task, error) {
 	if repository.UpdateTask(c, task) {
+
 		DbTask, err := repository.GetTaskById(c, task.Id)
-		Location, err := GetLocation(DbTask.Location)
+
+		Location, err := GetLocation(DbTask.Utillity)
+
 		taskModel := model.Task{
 			Id:          DbTask.Id,
 			GroupId:     DbTask.GroupId,
@@ -69,7 +72,7 @@ func UpdateTask(c context.Context, task model.TaskDTO) (model.Task, error) {
 			Date:        DbTask.Date,
 			StartTime:   DbTask.StartTime,
 			EndTime:     DbTask.EndTime,
-			Location:    Location,
+			Utillity:    Location,
 		}
 		if err != nil {
 			return model.Task{}, err
@@ -92,7 +95,7 @@ func CreateTask(ctx context.Context, task model.Task) (model.TaskDTO, error) {
 	}
 
 	taskDTO := model.TaskDTO{
-		PrimaryKey:  task.Date + task.GroupId,
+		PrimaryKey:  task.Date.String() + task.GroupId,
 		RowKey:      id.String(),
 		Id:          id.String(),
 		GroupId:     task.GroupId,
@@ -101,7 +104,7 @@ func CreateTask(ctx context.Context, task model.Task) (model.TaskDTO, error) {
 		Date:        task.Date,
 		StartTime:   task.StartTime,
 		EndTime:     task.EndTime,
-		Location:    task.Location.Id,
+		Utillity:    task.Utillity.Id,
 	}
 
 	response, err := repository.CreateTask(ctx, taskDTO)
@@ -109,21 +112,33 @@ func CreateTask(ctx context.Context, task model.Task) (model.TaskDTO, error) {
 	return response, err
 }
 
-func GetLocation(locationId string) (model.LocationDTO, error) {
+func GetLocation(locationId string) (model.Utillity, error) {
 	url := fmt.Sprintf("%s/%s", os.Getenv("MAP_API_URL"), locationId)
 	resp, err := http.Get(url)
 	if err != nil {
-		return model.LocationDTO{}, err
+		return model.Utillity{}, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return model.LocationDTO{}, errors.New("failed to get location")
+		return model.Utillity{}, errors.New("failed to get location")
 	}
 
-	var location model.LocationDTO
+	var location model.Utillity
 	if err := json.NewDecoder(resp.Body).Decode(&location); err != nil {
-		return model.LocationDTO{}, err
+		return model.Utillity{}, err
 	}
 	return location, nil
+}
+
+func GetAllTasks(ctx context.Context) ([]model.TaskDTO, error) {
+	tasks, err := repository.GetAllTasks(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(tasks) == 0 {
+		return nil, errors.New("no tasks found")
+	}
+	return tasks, nil
 }

@@ -15,6 +15,55 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/schedule": {
+            "get": {
+                "description": "Get all Tasks",
+                "summary": "Gets all tasks",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.TaskDTO"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create dummy data",
+                "summary": "Create dummy data",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/schedule/group/{groupid}": {
+            "get": {
+                "description": "Get a list of tasks by  group",
+                "summary": "Get the tasks for a group",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Group ID",
+                        "name": "groupid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.TaskDTO"
+                        }
+                    }
+                }
+            }
+        },
         "/schedule/task": {
             "post": {
                 "description": "Create a new task",
@@ -35,6 +84,56 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/model.TaskDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/schedule/task/checkins": {
+            "get": {
+                "description": "Get all checkins",
+                "summary": "Get all checkins",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.CheckInDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/schedule/task/checkins/{taskId}/{UserId}": {
+            "get": {
+                "description": "Get a checkin for a task",
+                "summary": "Get a checkin for a task",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Task ID",
+                        "name": "taskId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "UserId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "boolean"
                         }
                     }
                 }
@@ -92,9 +191,32 @@ const docTemplate = `{
                     }
                 }
             },
+            "delete": {
+                "description": "Delete a task",
+                "summary": "Deletes a task",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/schedule/task/{id}/cancel": {
             "post": {
-                "description": "CheckIn on a task",
-                "summary": "CheckIn on a task",
+                "description": "Cancel a task",
+                "summary": "Cancel a task",
                 "parameters": [
                     {
                         "type": "string",
@@ -112,31 +234,12 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
-            "delete": {
-                "description": "Delete a task",
-                "summary": "Deletes a task",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.TaskDTO"
-                        }
-                    }
-                }
-            },
-            "patch": {
-                "description": "Cancel a task",
-                "summary": "Cancel a task",
+            }
+        },
+        "/schedule/task/{id}/checkin": {
+            "post": {
+                "description": "CheckIn on a task",
+                "summary": "CheckIn on a task",
                 "parameters": [
                     {
                         "type": "string",
@@ -178,36 +281,6 @@ const docTemplate = `{
                     }
                 }
             }
-        },
-        "/schedule/{date}/{groupid}": {
-            "get": {
-                "description": "Get a list of tasks by date and group",
-                "summary": "Get the tasks by date and group",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Date",
-                        "name": "date",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Group ID",
-                        "name": "groupid",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.TaskDTO"
-                        }
-                    }
-                }
-            }
         }
     },
     "definitions": {
@@ -221,39 +294,36 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "checkinId": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "checkinTime": {
                     "type": "string"
                 },
+                "primaryKey": {
+                    "type": "string"
+                },
+                "reason": {
+                    "type": "string"
+                },
+                "rowKey": {
+                    "type": "string"
+                },
                 "taskId": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "userId": {
-                    "type": "integer"
+                    "type": "string"
                 }
             }
         },
-        "model.LocationDTO": {
+        "model.Location": {
             "type": "object",
             "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "lat": {
+                "latitude": {
                     "type": "number"
                 },
-                "lng": {
+                "longitude": {
                     "type": "number"
-                },
-                "name": {
-                    "type": "string"
                 }
             }
         },
@@ -270,21 +340,19 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "groupId": {
-                    "type": "integer"
+                    "type": "string"
                 },
-                "location": {
-                    "description": "has to be object",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.LocationDTO"
-                        }
-                    ]
+                "id": {
+                    "type": "string"
                 },
                 "name": {
                     "type": "string"
                 },
                 "startTime": {
                     "type": "string"
+                },
+                "utillity": {
+                    "$ref": "#/definitions/model.Utillity"
                 }
             }
         },
@@ -301,23 +369,47 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "groupId": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "id": {
-                    "type": "integer"
-                },
-                "location": {
-                    "description": "has to be object",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.LocationDTO"
-                        }
-                    ]
+                    "type": "string"
                 },
                 "name": {
                     "type": "string"
                 },
+                "primaryKey": {
+                    "type": "string"
+                },
+                "rowKey": {
+                    "type": "string"
+                },
                 "startTime": {
+                    "type": "string"
+                },
+                "utillity": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.Utillity": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "icon": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "location": {
+                    "$ref": "#/definitions/model.Location"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "ocean": {
                     "type": "string"
                 }
             }
