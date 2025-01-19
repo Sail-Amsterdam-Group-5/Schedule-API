@@ -2,7 +2,7 @@
     {
     "name": "Hospitality",
     "description": "Various tasks such as greeting and guiding guests at different festival locations/events.",
-    "date": "25-08-21T10:00:00Z",
+    "date": "2025-08-21T10:00:00Z",
     "startTime": "2025-08-21T10:00:00Z",
     "endTime": "2025-08-21T14:00:00Z",
     "groupId": "1",
@@ -13,7 +13,7 @@
     {
     "name": "Production",
     "description": "Assist performing artists, organisational and technical support.",
-    "date": "25-08-21T15:00:00Z",
+    "date": "2025-08-21T15:00:00Z",
     "startTime": "2025-08-21T15:00:00Z",
     "endTime": "2025-08-21T19:00:00Z",
     "groupId": "1",
@@ -24,7 +24,7 @@
     {
     "name": "Public information",
     "description": "Informing guests at information points on the festival grounds",
-    "date": "25-08-21T20:00:00Z",
+    "date": "2025-08-21T20:00:00Z",
     "startTime": "2025-08-21T20:00:00Z",
     "endTime": "2025-08-21T23:00:00Z",
     "groupId": "1",
@@ -37,7 +37,7 @@
   {
     "name": "Security",
     "description": "Supporting the hired security company, Traffic assistant.",
-    "date": "25-08-22T09:00:00Z",
+    "date": "2025-08-22T09:00:00Z",
     "startTime": "2025-08-22T09:00:00Z",
     "endTime": "2025-08-22T12:00:00Z",
     "groupId": "1",
@@ -48,7 +48,7 @@
     {
     "name": "Media",
     "description": "Supporting the press centre including photography, reporting, etc.",
-    "date": "25-08-22T13:00:00Z",
+    "date": "2025-08-22T13:00:00Z",
     "startTime": "2025-08-22T13:00:00Z",
     "endTime": "2025-08-22T18:00:00Z",
     "groupId": "1",
@@ -59,7 +59,7 @@
     {
     "name": "General Duty",
     "description": "Support role at the operations center of SAIL",
-    "date": "25-08-22T19:00:00Z",
+    "date": "2025-08-22T19:00:00Z",
     "startTime": "2025-08-22T19:00:00Z",
     "endTime": "2025-08-22T23:00:00Z",
     "groupId": "1",
