@@ -169,21 +169,14 @@ func UpdateTask(c *gin.Context) {
 // @Success 200 {object} string
 // @Router /schedule/task/{id} [delete]
 func DeleteTask(c *gin.Context) {
-	id := c.Param("id")
-	task, err := service.GetTaskById(c.Request.Context(), id)
 
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	delete := service.DeleteTask(c.Request.Context(), task.PrimaryKey, task.RowKey)
+	delete := service.DeleteTask(c.Request.Context(), c.Param("id"))
 
 	if !delete {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete task"})
 	}
 	// Here you would delete the task from the database using the id.
-	c.JSON(http.StatusOK, gin.H{"message": "Task with ID " + id + " deleted successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "Task with ID " + c.Param("id") + " deleted successfully"})
 }
 
 // CheckIn checks in on a Task.

@@ -21,39 +21,86 @@ func GetAllTaskForUser(ctx context.Context, userId string) ([]byte, error) {
 }
 
 // get all for group
-func GetAllTaskForGroup(ctx context.Context, groupId string) ([]model.TaskDTO, error) {
+func GetAllTaskForGroup(ctx context.Context, groupId string) ([]model.Task, error) {
 	tasks, err := repository.GetAllTaskForGroup(ctx, groupId)
 	if err != nil {
 		return nil, err
 	}
-
 	if len(tasks) == 0 {
 		return nil, errors.New("no tasks found")
+	} else {
+		var taskModel []model.Task
+		for _, task := range tasks {
+			Location, err := GetLocation(task.Location)
+			if err != nil {
+				return nil, err
+			}
+			taskModel = append(taskModel, model.Task{
+				Id:          task.Id,
+				GroupId:     task.GroupId,
+				Name:        task.Name,
+				Description: task.Description,
+				Date:        task.Date,
+				StartTime:   task.StartTime,
+				EndTime:     task.EndTime,
+				Location:    Location,
+			})
+		}
+		return taskModel, nil
 	}
-	return tasks, nil
 }
 
 // get all for date
-func GetAllTaskForDate(ctx context.Context, date string, groupId string) ([]model.TaskDTO, error) {
+func GetAllTaskForDate(ctx context.Context, date string, groupId string) ([]model.Task, error) {
 	tasks, err := repository.GetAllTaskForDate(ctx, date, groupId)
 	if err != nil {
 		return nil, err
 	}
-
 	if len(tasks) == 0 {
 		return nil, errors.New("no tasks found")
+	} else {
+		var taskModel []model.Task
+		for _, task := range tasks {
+			Location, err := GetLocation(task.Location)
+			if err != nil {
+				return nil, err
+			}
+			taskModel = append(taskModel, model.Task{
+				Id:          task.Id,
+				GroupId:     task.GroupId,
+				Name:        task.Name,
+				Description: task.Description,
+				Date:        task.Date,
+				StartTime:   task.StartTime,
+				EndTime:     task.EndTime,
+				Location:    Location,
+			})
+		}
+		return taskModel, nil
 	}
-	return tasks, nil
 }
 
 // get by id
-func GetTaskById(ctx context.Context, id string) (model.TaskDTO, error) {
+func GetTaskById(ctx context.Context, id string) (model.Task, error) {
 	task, err := repository.GetTaskById(ctx, id)
 
-	if err != nil {
-		return model.TaskDTO{}, err
+	Location, err := GetLocation(task.Location)
+
+	taskModel := model.Task{
+		Id:          task.Id,
+		GroupId:     task.GroupId,
+		Name:        task.Name,
+		Description: task.Description,
+		Date:        task.Date,
+		StartTime:   task.StartTime,
+		EndTime:     task.EndTime,
+		Location:    Location,
 	}
-	return task, nil
+	if err != nil {
+		return model.Task{}, err
+	}
+	return taskModel, nil
+
 }
 
 // update a task
@@ -83,8 +130,8 @@ func UpdateTask(c context.Context, task model.TaskDTO) (model.Task, error) {
 }
 
 // delete a task
-func DeleteTask(ctx context.Context, pk string, rk string) bool {
-	return repository.DeleteTask(ctx, pk, rk)
+func DeleteTask(ctx context.Context, id string) bool {
+	return repository.DeleteTask(ctx, id)
 }
 
 // create a task
@@ -114,6 +161,7 @@ func CreateTask(ctx context.Context, task model.Task) (model.TaskDTO, error) {
 
 func GetLocation(locationId string) (model.LocationDTO, error) {
 	url := fmt.Sprintf("%s/%s", os.Getenv("MAP_API_URL"), locationId)
+	fmt.Println(url)
 	resp, err := http.Get(url)
 	if err != nil {
 		return model.LocationDTO{}, err
@@ -131,14 +179,31 @@ func GetLocation(locationId string) (model.LocationDTO, error) {
 	return location, nil
 }
 
-func GetAllTasks(ctx context.Context) ([]model.TaskDTO, error) {
+func GetAllTasks(ctx context.Context) ([]model.Task, error) {
 	tasks, err := repository.GetAllTasks(ctx)
 	if err != nil {
 		return nil, err
 	}
-
 	if len(tasks) == 0 {
 		return nil, errors.New("no tasks found")
+	} else {
+		var taskModel []model.Task
+		for _, task := range tasks {
+			Location, err := GetLocation(task.Location)
+			if err != nil {
+				return nil, err
+			}
+			taskModel = append(taskModel, model.Task{
+				Id:          task.Id,
+				GroupId:     task.GroupId,
+				Name:        task.Name,
+				Description: task.Description,
+				Date:        task.Date,
+				StartTime:   task.StartTime,
+				EndTime:     task.EndTime,
+				Location:    Location,
+			})
+		}
+		return taskModel, nil
 	}
-	return tasks, nil
 }

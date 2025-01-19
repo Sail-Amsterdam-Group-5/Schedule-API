@@ -164,8 +164,13 @@ func UpdateTask(c context.Context, task model.TaskDTO) bool {
 }
 
 // delete a task
-func DeleteTask(ctx context.Context, pk string, rk string) bool {
-	database.Delete(ctx, "Tasks", pk, rk)
+func DeleteTask(ctx context.Context, id string) bool {
+	filter := database.BuildFilter("Id", id)
+	task, err := database.ReadFilter(ctx, "Tasks", filter)
+	if err != nil {
+		return false
+	}
+	database.Delete(ctx, "Tasks", task[0].PartitionKey, task[0].RowKey)
 	return true
 }
 
