@@ -12,5 +12,5 @@ type TaskDTO struct {
 	Date        time.Time `json:"date"`
 	StartTime   time.Time `json:"startTime"`
 	EndTime     time.Time `json:"endTime"`
-	Utillity    string    `json:"utillity"`
+	Location    string    `json:"location"`
 }

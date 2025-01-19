@@ -62,7 +62,7 @@ func UpdateTask(c context.Context, task model.TaskDTO) (model.Task, error) {
 
 		DbTask, err := repository.GetTaskById(c, task.Id)
 
-		Location, err := GetLocation(DbTask.Utillity)
+		Location, err := GetLocation(DbTask.Location)
 
 		taskModel := model.Task{
 			Id:          DbTask.Id,
@@ -72,7 +72,7 @@ func UpdateTask(c context.Context, task model.TaskDTO) (model.Task, error) {
 			Date:        DbTask.Date,
 			StartTime:   DbTask.StartTime,
 			EndTime:     DbTask.EndTime,
-			Utillity:    Location,
+			Location:    Location,
 		}
 		if err != nil {
 			return model.Task{}, err
@@ -104,7 +104,7 @@ func CreateTask(ctx context.Context, task model.Task) (model.TaskDTO, error) {
 		Date:        task.Date,
 		StartTime:   task.StartTime,
 		EndTime:     task.EndTime,
-		Utillity:    task.Utillity.Id,
+		Location:    task.Location.Id,
 	}
 
 	response, err := repository.CreateTask(ctx, taskDTO)
@@ -112,21 +112,21 @@ func CreateTask(ctx context.Context, task model.Task) (model.TaskDTO, error) {
 	return response, err
 }
 
-func GetLocation(locationId string) (model.Utillity, error) {
+func GetLocation(locationId string) (model.LocationDTO, error) {
 	url := fmt.Sprintf("%s/%s", os.Getenv("MAP_API_URL"), locationId)
 	resp, err := http.Get(url)
 	if err != nil {
-		return model.Utillity{}, err
+		return model.LocationDTO{}, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return model.Utillity{}, errors.New("failed to get location")
+		return model.LocationDTO{}, errors.New("failed to get location")
 	}
 
-	var location model.Utillity
+	var location model.LocationDTO
 	if err := json.NewDecoder(resp.Body).Decode(&location); err != nil {
-		return model.Utillity{}, err
+		return model.LocationDTO{}, err
 	}
 	return location, nil
 }
