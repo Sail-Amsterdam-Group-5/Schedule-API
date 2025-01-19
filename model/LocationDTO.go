@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-type Utillity struct {
+type LocationDTO struct {
 	Id        string    `json:"id"`
 	Name      string    `json:"name"`
 	Icon      string    `json:"icon"`
