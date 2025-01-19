@@ -126,7 +126,7 @@ func GetAllCheckIns(ctx context.Context) ([]model.CheckInResponse, error) {
 }
 
 func GetCheckInForTask(ctx context.Context, userId string, taskId string) (bool, error) {
-	checkIn, err := repository.CheckCheckin(ctx, taskId, userId)
+	checkIn, err := repository.CheckCheckin(ctx, userId, taskId)
 	if err != nil {
 		return false, err
 	}

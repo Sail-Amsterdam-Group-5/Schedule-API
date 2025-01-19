@@ -244,13 +244,13 @@ func GetAllCheckIns(c *gin.Context) {
 // GetCheckInForTask gets a checkin for a task.
 // @Summary Get a checkin for a task
 // @Description Get a checkin for a task
-// @Param taskId path string true "Task ID"
 // @Param UserId path string true "User ID"
+// @Param taskId path string true "Task ID"
 // @Success 200 {boolean} boolean
-// @Router /schedule/task/checkins/{taskId}/{UserId} [get]
+// @Router /schedule/task/checkins/{UserId}/{TaskId} [get]
 func GetCheckInForTask(c *gin.Context) {
-	taskId := c.Param("taskId")
 	userId := c.Param("UserId")
+	taskId := c.Param("TaskId")
 
 	checkin, err := service.GetCheckInForTask(c.Request.Context(), userId, taskId)
 	if err != nil {
