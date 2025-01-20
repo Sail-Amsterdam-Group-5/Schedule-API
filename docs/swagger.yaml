@@ -1,4 +1,10 @@
 definitions:
+  model.CancelReason:
+    properties:
+      reason:
+        description: Reason for canceling the task.
+        type: string
+    type: object
   model.CheckInDTO:
     properties:
       cancelledTask:
@@ -204,6 +210,12 @@ paths:
         name: id
         required: true
         type: string
+      - description: Reason
+        in: body
+        name: reason
+        required: true
+        schema:
+          $ref: '#/definitions/model.CancelReason'
       responses:
         "200":
           description: OK

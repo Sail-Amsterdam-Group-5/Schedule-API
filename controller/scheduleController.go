@@ -203,6 +203,7 @@ func CheckIn(c *gin.Context) {
 // @Summary Cancel a task
 // @Description Cancel a task
 // @Param id path string true "ID"
+// @Param reason body model.CancelReason true "Reason"
 // @Success 200 {object} model.CheckInDTO
 // @Router /schedule/task/{id}/cancel [post]
 func CancelTask(c *gin.Context) {

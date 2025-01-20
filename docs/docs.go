@@ -242,6 +242,15 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Reason",
+                        "name": "reason",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.CancelReason"
+                        }
                     }
                 ],
                 "responses": {
@@ -302,6 +311,15 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "model.CancelReason": {
+            "type": "object",
+            "properties": {
+                "reason": {
+                    "description": "Reason for canceling the task.",
+                    "type": "string"
+                }
+            }
+        },
         "model.CheckInDTO": {
             "type": "object",
             "properties": {
