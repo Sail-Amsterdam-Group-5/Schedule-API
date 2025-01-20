@@ -27,49 +27,7 @@ definitions:
       longitude:
         type: number
     type: object
-  model.Task:
-    properties:
-      date:
-        type: string
-      description:
-        type: string
-      endTime:
-        type: string
-      groupId:
-        type: string
-      id:
-        type: string
-      name:
-        type: string
-      startTime:
-        type: string
-      utillity:
-        $ref: '#/definitions/model.Utillity'
-    type: object
-  model.TaskDTO:
-    properties:
-      date:
-        type: string
-      description:
-        type: string
-      endTime:
-        type: string
-      groupId:
-        type: string
-      id:
-        type: string
-      name:
-        type: string
-      primaryKey:
-        type: string
-      rowKey:
-        type: string
-      startTime:
-        type: string
-      utillity:
-        type: string
-    type: object
-  model.Utillity:
+  model.LocationDTO:
     properties:
       created_at:
         type: string
@@ -84,6 +42,48 @@ definitions:
       ocean:
         type: string
     type: object
+  model.Task:
+    properties:
+      date:
+        type: string
+      description:
+        type: string
+      endTime:
+        type: string
+      groupId:
+        type: string
+      id:
+        type: string
+      location:
+        $ref: '#/definitions/model.LocationDTO'
+      name:
+        type: string
+      startTime:
+        type: string
+    type: object
+  model.TaskDTO:
+    properties:
+      date:
+        type: string
+      description:
+        type: string
+      endTime:
+        type: string
+      groupId:
+        type: string
+      id:
+        type: string
+      location:
+        type: string
+      name:
+        type: string
+      primaryKey:
+        type: string
+      rowKey:
+        type: string
+      startTime:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
@@ -96,14 +96,6 @@ paths:
           schema:
             $ref: '#/definitions/model.TaskDTO'
       summary: Gets all tasks
-    post:
-      description: Create dummy data
-      responses:
-        "200":
-          description: OK
-          schema:
-            type: string
-      summary: Create dummy data
   /schedule/{date}:
     get:
       description: Get a schedule by date
@@ -246,14 +238,14 @@ paths:
     get:
       description: Get a checkin for a task
       parameters:
-      - description: Task ID
-        in: path
-        name: taskId
-        required: true
-        type: string
       - description: User ID
         in: path
         name: UserId
+        required: true
+        type: string
+      - description: Task ID
+        in: path
+        name: taskId
         required: true
         type: string
       responses:

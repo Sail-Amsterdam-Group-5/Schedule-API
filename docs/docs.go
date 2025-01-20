@@ -27,18 +27,6 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
-            "post": {
-                "description": "Create dummy data",
-                "summary": "Create dummy data",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
             }
         },
         "/schedule/group/{groupid}": {
@@ -116,15 +104,15 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Task ID",
-                        "name": "taskId",
+                        "description": "User ID",
+                        "name": "UserId",
                         "in": "path",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "User ID",
-                        "name": "UserId",
+                        "description": "Task ID",
+                        "name": "taskId",
                         "in": "path",
                         "required": true
                     }
@@ -327,6 +315,29 @@ const docTemplate = `{
                 }
             }
         },
+        "model.LocationDTO": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "icon": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "location": {
+                    "$ref": "#/definitions/model.Location"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "ocean": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Task": {
             "type": "object",
             "properties": {
@@ -345,14 +356,14 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "location": {
+                    "$ref": "#/definitions/model.LocationDTO"
+                },
                 "name": {
                     "type": "string"
                 },
                 "startTime": {
                     "type": "string"
-                },
-                "utillity": {
-                    "$ref": "#/definitions/model.Utillity"
                 }
             }
         },
@@ -374,6 +385,9 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "location": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -384,32 +398,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "startTime": {
-                    "type": "string"
-                },
-                "utillity": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.Utillity": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "icon": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "location": {
-                    "$ref": "#/definitions/model.Location"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "ocean": {
                     "type": "string"
                 }
             }

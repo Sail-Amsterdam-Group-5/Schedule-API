@@ -5,7 +5,6 @@ import (
 	"os"
 	"schedule-api/controller"
 	"schedule-api/docs"
-	middleware "schedule-api/middleware"
 
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -14,6 +13,11 @@ import (
 )
 
 func main() {
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	log.Fatalf("Error loading .env file: %v", err)
+	// }
+
 	// Check for OC secrets
 	log.Println("Env test: %v", os.Getenv("HTTP_PLATFORM_PORT"))
 
@@ -28,21 +32,21 @@ func main() {
 	// Schedule CRUD routes
 	schedule := router.Group("/schedule")
 	{
-		schedule.GET("/", middleware.CheckScope("volunteer"), controller.GetAllTasks)                   // Volunteer
-		schedule.GET("/:date", middleware.CheckScope("volunteer"), controller.GetSchedule)              // Volunteer
-		schedule.GET("/group/:groupid", middleware.CheckScope("volunteer"), controller.GetTasksByGroup) // Volunteer
+		schedule.GET("/", controller.GetAllTasks)                   // Volunteer
+		schedule.GET("/:date", controller.GetSchedule)              // Volunteer
+		schedule.GET("/group/:groupid", controller.GetTasksByGroup) // Volunteer
 
-		schedule.POST("/task", middleware.CheckScope("team-lead"), controller.CreateTask) // Team Lead
+		schedule.POST("/task", controller.CreateTask) // Team Lead
 
-		schedule.GET("/task/:id", middleware.CheckScope("volunteer"), controller.GetTask)       // Volunteer
-		schedule.PUT("/task/:id", middleware.CheckScope("team-lead"), controller.UpdateTask)    // Team Lead
-		schedule.DELETE("/task/:id", middleware.CheckScope("team-lead"), controller.DeleteTask) // Team Lead
+		schedule.GET("/task/:id", controller.GetTask)       // Volunteer
+		schedule.PUT("/task/:id", controller.UpdateTask)    // Team Lead
+		schedule.DELETE("/task/:id", controller.DeleteTask) // Team Lead
 
-		schedule.POST("/task/:id/checkin", middleware.CheckScope("volunteer"), controller.CheckIn)   // Volunteer
-		schedule.POST("/task/:id/cancel", middleware.CheckScope("volunteer"), controller.CancelTask) // Volunteer
+		schedule.POST("/task/:id/checkin", controller.CheckIn)   // Volunteer
+		schedule.POST("/task/:id/cancel", controller.CancelTask) // Volunteer
 
-		schedule.GET("/task/checkins", middleware.CheckScope("team-lead"), controller.GetAllCheckIns)                    // Team Lead
-		schedule.GET("/task/checkins/:taskId/:UserId", middleware.CheckScope("volunteer"), controller.GetCheckInForTask) // Volunteer
+		schedule.GET("/task/checkins", controller.GetAllCheckIns)                    // Team Lead
+		schedule.GET("/task/checkins/:taskId/:UserId", controller.GetCheckInForTask) // Volunteer
 	}
 
 	// Health check endpoint
