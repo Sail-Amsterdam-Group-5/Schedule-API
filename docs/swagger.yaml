@@ -225,6 +225,26 @@ paths:
           schema:
             $ref: '#/definitions/model.CheckInDTO'
       summary: CheckIn on a task
+  /schedule/task/canceled/{taskId}/{UserId}:
+    get:
+      description: Get a cancel for a task
+      parameters:
+      - description: User ID
+        in: path
+        name: UserId
+        required: true
+        type: string
+      - description: Task ID
+        in: path
+        name: taskId
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: boolean
+      summary: Get a cancel for a task
   /schedule/task/checkins:
     get:
       description: Get all checkins

@@ -132,3 +132,11 @@ func GetCheckInForTask(ctx context.Context, userId string, taskId string) (bool,
 	}
 	return checkIn, nil
 }
+
+func GetCancelForTask(ctx context.Context, userId string, taskId string) (bool, error) {
+	checkIn, err := repository.CheckCancel(ctx, userId, taskId)
+	if err != nil {
+		return false, err
+	}
+	return checkIn, nil
+}

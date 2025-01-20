@@ -83,6 +83,36 @@ const docTemplate = `{
                 }
             }
         },
+        "/schedule/task/canceled/{taskId}/{UserId}": {
+            "get": {
+                "description": "Get a cancel for a task",
+                "summary": "Get a cancel for a task",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "UserId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Task ID",
+                        "name": "taskId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                }
+            }
+        },
         "/schedule/task/checkins": {
             "get": {
                 "description": "Get all checkins",

@@ -97,6 +97,32 @@ func CheckCheckin(ctx context.Context, userId string, taskId string) (bool, erro
 	return false, nil
 }
 
+func CheckCancel(ctx context.Context, userId string, taskId string) (bool, error) {
+	filter := database.BuildDuoFilter("UserId", userId, "TaskId", taskId)
+	entities, err := database.ReadFilter(ctx, "CheckIn", filter)
+	if err != nil {
+		return false, fmt.Errorf("Cancel not found")
+	}
+
+	for _, entity := range entities {
+		dto := model.CheckInDTO{
+			PrimaryKey:    entity.PartitionKey,
+			RowKey:        entity.RowKey,
+			CheckInId:     entity.Properties["CheckInId"].(string),
+			UserId:        entity.Properties["UserId"].(string),
+			TaskId:        entity.Properties["TaskId"].(string),
+			CheckedIn:     entity.Properties["CheckedIn"].(bool),
+			CheckInTime:   parseTime(entity.Properties["CheckInTime"].(string)),
+			CancelledTask: entity.Properties["CancelledTask"].(bool),
+			Reason:        entity.Properties["Reason"].(string),
+		}
+		if dto.CancelledTask {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
 func UpdateCheckin(ctx context.Context, dto model.CheckInDTO) error {
 	pk := dto.PrimaryKey
 	rk := dto.RowKey

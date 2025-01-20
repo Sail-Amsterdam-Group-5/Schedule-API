@@ -47,6 +47,7 @@ func main() {
 
 		schedule.GET("/task/checkins", controller.GetAllCheckIns)                    // Team Lead
 		schedule.GET("/task/checkins/:taskId/:UserId", controller.GetCheckInForTask) // Volunteer
+		schedule.GET("/task/canceled/:taskId/:UserId", controller.GetCancelForTask)  // Volunteer
 	}
 
 	// Health check endpoint

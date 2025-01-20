@@ -260,3 +260,23 @@ func GetCheckInForTask(c *gin.Context) {
 
 	c.JSON(http.StatusOK, checkin)
 }
+
+// GetCancelForTask checks if user is canceld for a task.
+// @Summary Get a cancel for a task
+// @Description Get a cancel for a task
+// @Param UserId path string true "User ID"
+// @Param taskId path string true "Task ID"
+// @Success 200 {boolean} boolean
+// @Router /schedule/task/canceled/{taskId}/{UserId} [get]
+func GetCancelForTask(c *gin.Context) {
+	taskId := c.Param("taskId")
+	userId := c.Param("UserId")
+
+	checkin, err := service.GetCancelForTask(c.Request.Context(), userId, taskId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, checkin)
+}
